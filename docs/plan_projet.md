@@ -88,7 +88,7 @@ Une démo qui marche vaut mieux que dix idées à moitié finies.
 **Livrable :** la première démo de bout en bout. Une image en entrée donne une image annotée en sortie, avec le type de chaque avion (MVP).
 
 ### Séance 4 : intégration complète et comparaisons (étape 5)
-- [x] Interface **Gradio** : on dépose une image et on voit les avions sûrs et les avions à vérifier, comparés à la vérité (`scripts/app.py`, D14).
+- [x] Interface **Gradio** : on choisit une des 131 images de test (jamais vues), on voit les avions sûrs et les avions à vérifier, puis on les compare à la vérité boîte par boîte (`scripts/app.py`, D14, D17, D18).
 - [ ] Comparaisons restantes : petit CNN, ResNet-18 sans pré-entraînement, notre système contre le témoin.
 - [ ] Analyse des erreurs : classes confondues, avions manqués. Choix des seuils de confiance.
 - [x] Évaluation **unique** sur le jeu de test (D15) : mAP50 de 0,957 et F1 de 0,954 pour notre système, contre 0,940 et 0,912 pour le témoin.

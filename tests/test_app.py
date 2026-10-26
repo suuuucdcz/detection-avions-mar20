@@ -1,15 +1,16 @@
-"""Tests de l'interface : elle ne propose que des images jamais vues à l'entraînement."""
+"""Tests de l'interface : elle ne propose que des images de test, jamais vues à l'entraînement."""
 
 import pandas as pd
 
-from avions.app import charger_images_non_vues
+from avions.app import IMAGES_CONSEILLEES, charger_images_test
 from avions.constants import SPLITS_FILE
 
 
-def test_seules_les_images_jamais_vues_sont_proposees():
-    _, images = charger_images_non_vues()
+def test_seules_les_images_de_test_sont_proposees():
+    verite, ordre = charger_images_test()
     jeux = pd.read_csv(SPLITS_FILE, dtype={"image_id": str}).set_index("image_id")["split"]
 
-    assert set(images["jeu"]) == {"val", "test"}
-    assert len(images) == 130 + 131
-    assert not (jeux[images.index] == "train").any()  # aucune image d'entraînement
+    assert len(ordre) == len(set(ordre)) == 131  # les 131 images de test, chacune une fois
+    assert (jeux[ordre] == "test").all()  # aucune image d'entraînement ni de validation
+    assert set(verite["image_id"]) == set(ordre)
+    assert ordre[: len(IMAGES_CONSEILLEES)] == list(IMAGES_CONSEILLEES)  # conseillées d'abord

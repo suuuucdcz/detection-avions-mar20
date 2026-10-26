@@ -516,3 +516,14 @@ Les images (68 Mo) sont sur le Drive, d'où le lien partagé dans le rapport, ma
 **Intérêt pour l'oral :** la démonstration montre honnêtement où le modèle se trompe, sur des images qu'il n'a jamais vues. Sur l'image 1453, on obtient 0 fausse alarme et 0 avion manqué, et les seules erreurs sont des A1 pris pour des A19, deux types qui se ressemblent beaucoup. C'est l'occasion d'expliquer la matrice de confusion, la précision et le rappel.
 
 Les images de test ont servi une seule fois à l'évaluation finale (D15). Les regarder dans l'interface ne modifie aucun réglage.
+
+## D18 : une interface plus simple et plus claire (26/10/2026)
+
+**Contexte :** pour la démonstration à l'oral, l'interface de D17 était trop chargée (deux jeux d'images, une liste déroulante, beaucoup de texte).
+
+**Choix** (`src/avions/app.py`)
+- **Seulement les 131 images de test.** Les images de validation ont servi à régler le seuil : les montrer n'apporte rien de plus, et un seul jeu est plus simple à expliquer (« des images que le modèle n'a jamais vues, et qui n'ont servi à aucun réglage »). Le test automatique vérifie toujours qu'aucune autre image n'est proposée.
+- **Une galerie de vignettes** au lieu d'une liste déroulante, avec **quatre images conseillées** en tête (★) : 883 (sans faute), 3607 (50 avions serrés), 3803 (confusions A1 / A19) et 1128 (le modèle hésite).
+- **Deux gros boutons** : « 🔍 Détecter les avions » puis « ✅ Comparer avec la vérité ». Le second lance la détection tout seul si on l'a oubliée.
+- **Des cartes chiffrées** à la place des longs textes : en haut, les scores officiels sur le test (F1, précision, fausses alarmes, mauvais types) ; sous chaque image, le bilan de l'image.
+- Les réglages (seuil, avions à vérifier) et les tableaux détaillés sont rangés dans des panneaux repliables : ils restent accessibles sans encombrer l'écran.

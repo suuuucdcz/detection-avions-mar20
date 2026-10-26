@@ -23,7 +23,12 @@ image satellite
                                      image annotée + fichier XML (Pascal VOC)
 ```
 
-Un détecteur YOLO à 20 classes, qui fait tout en une seule passe, sert de **témoin** pour vérifier que l'approche en deux étages est vraiment meilleure. Les choix sont justifiés dans [docs/journal_decisions.md](docs/journal_decisions.md).
+Un détecteur YOLO à 20 classes, qui fait tout en une seule passe, sert de **témoin** pour vérifier que l'approche en deux étages est vraiment meilleure.
+
+Pour aller plus loin :
+- [docs/architecture.md](docs/architecture.md) : l'architecture complète, étape par étape, avec les résultats ;
+- [docs/journal_decisions.md](docs/journal_decisions.md) : la justification de chaque choix ;
+- [docs/fiches_oral.md](docs/fiches_oral.md) : les 12 notions théoriques de l'oral, appliquées au projet.
 
 ## Installation
 
@@ -87,9 +92,12 @@ La mAP50 est mesurée sur tous les seuils. Avec les avions « à vérifier », 7
 uv run python scripts/app.py
 ```
 
-La page s'ouvre dans le navigateur (http://127.0.0.1:7860). Comme le demande le sujet, aucune image extérieure n'est ajoutée : on choisit une image **que le modèle n'a jamais vue pendant son entraînement**, parmi les 130 de validation et les 131 de test (liste déroulante ou bouton « Image au hasard »).
-1. **Analyser** : le modèle dessine ses boîtes. Les avions **sûrs** apparaissent en boîtes épaisses ; les avions **à vérifier** (type incertain) en boîtes fines, marqués « ? ».
-2. **Vérifier** : la comparaison avec les vraies annotations s'affiche à côté, boîte par boîte : 🟩 bon type, 🟧 mauvais type, 🟥 fausse alarme, 🟪 avion manqué. Un bilan et un tableau des erreurs l'accompagnent.
+La page s'ouvre dans le navigateur (http://127.0.0.1:7860). Comme le demande le sujet, aucune image extérieure n'est ajoutée : l'interface propose **les 131 images de test**, que le modèle n'a jamais vues pendant son entraînement. Quatre images conseillées (★) sont placées en tête de la galerie.
+1. **Choisir une image** : un clic sur une vignette, ou le bouton « 🎲 Image au hasard ».
+2. **🔍 Détecter les avions** : le modèle dessine ses boîtes. Les avions **sûrs** apparaissent en boîtes épaisses ; les avions **à vérifier** (type incertain) en boîtes fines, marqués « ? ».
+3. **✅ Comparer avec la vérité** : la comparaison avec les vraies annotations s'affiche à côté, boîte par boîte : 🟩 bon type, 🟧 mauvais type, 🟥 fausse alarme, 🟪 avion manqué. Des cartes chiffrées résument le résultat ; le détail est dans « Détails boîte par boîte ».
+
+Le seuil de confiance et l'affichage des avions « à vérifier » se règlent dans l'onglet « Réglages ».
 
 Pour une seule image en ligne de commande : `uv run python scripts/predict.py data/raw/images/1453.jpg`.
 
@@ -117,7 +125,7 @@ Le dossier **`Mon Drive/projet_avions`** est une **copie exacte de ce projet**, 
 | `data/` | les données (ignorées par Git, sauf les fichiers de split) |
 | `models/` | les poids entraînés (ignorés par Git) |
 | `reports/` | figures et métriques pour le rapport et l'oral |
-| `docs/` | plan du projet, journal des décisions, fiches de révision |
+| `docs/` | plan du projet, architecture, journal des décisions, fiches de révision |
 
 ## Avancement
 
