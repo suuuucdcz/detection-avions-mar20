@@ -1,0 +1,22 @@
+{
+  "baseline_rf": {
+    "accuracy": 0.6925031766200762,
+    "macro_f1": 0.613731803301729,
+    "erreurs": 242
+  },
+  "classifieur_resnet18": {
+    "accuracy": 0.9961880559085133,
+    "macro_f1": 0.9964048414712131,
+    "erreurs": 3
+  },
+  "classifieur_resnet18_sans_pretrain": {
+    "accuracy": 0.9733163913595934,
+    "macro_f1": 0.972586027911458,
+    "erreurs": 21
+  },
+  "classifieur_smallcnn": {
+    "accuracy": 0.7509529860228716,
+    "macro_f1": 0.689566256748938,
+    "erreurs": 196
+  }
+}

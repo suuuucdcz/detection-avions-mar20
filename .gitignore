@@ -1,0 +1,36 @@
+# Environnement Python (recréé par `uv sync`)
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+
+# Données : trop lourdes pour Git (425 Mo). On ne versionne que les fichiers de split.
+data/*
+!data/splits/
+
+# Poids des modèles (139 Mo) : trop lourds pour Git, ils sont sur le Drive (dossier models/)
+models/
+*.pt
+*.joblib
+*.onnx
+# Résultats des entraînements (runs/) : versionnés comme preuve des scores (courbes,
+# métriques, matrices de confusion), sauf les points de sauvegarde intermédiaires
+runs/**/weights/
+
+# Sujet du prof : document de cours, pas à publier dans un dépôt public
+docs/main.pdf
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Poids téléchargés par Ultralytics (modèles pré-entraînés, vérification AMP)
+/weights/
+
+# Corpus de test annoté : les images (68 Mo) sont sur le Drive, seuls les XML, le tableau et le LISEZMOI vont dans Git
+reports/corpus_test_annote/images/
+reports/corpus_test_annote/apercus/

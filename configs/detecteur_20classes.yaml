@@ -1,0 +1,20 @@
+# Témoin end-to-end : YOLO détecte ET classe les 20 types d'avions en une seule passe.
+# Il sert à vérifier avec des chiffres que notre architecture en deux étages vaut le coup (décision D1).
+# Lancer : uv run python scripts/train_detector.py configs/detecteur_20classes.yaml
+# Mêmes réglages que le détecteur à 1 classe, pour une comparaison équitable : seul single_cls change.
+
+name: detecteur_20classes
+model: yolo11n.pt
+single_cls: false         # les 20 classes A1…A20 sont gardées
+
+imgsz: 800
+epochs: 80
+patience: 15
+batch: 16
+workers: 4
+seed: 0
+
+fliplr: 0.5
+flipud: 0.5
+degrees: 0
+close_mosaic: 10

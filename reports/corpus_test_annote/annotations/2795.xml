@@ -1,0 +1,27 @@
+<annotation>
+	<folder>corpus_test_annote</folder>
+	<filename>2795.jpg</filename>
+	<source>
+		<annotation>prédictions du modèle : détecteur YOLO11n puis classifieur ResNet-18</annotation>
+	</source>
+	<size>
+		<width>800</width>
+		<height>800</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>A13</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>200</xmin>
+			<ymin>285</ymin>
+			<xmax>298</xmax>
+			<ymax>432</ymax>
+		</bndbox>
+		<score>0.4916</score>
+		<a_verifier>1</a_verifier>
+	</object>
+</annotation>

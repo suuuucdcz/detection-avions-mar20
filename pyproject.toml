@@ -1,0 +1,85 @@
+# Fichier de configuration du projet, lu par uv.
+# Il décrit : la version de Python, les bibliothèques nécessaires et où les télécharger.
+# Le fichier uv.lock (généré automatiquement) fige les versions exactes : tout le monde
+# (toi, ton binôme, Docker) obtient exactement le même environnement.
+
+[project]
+name = "detection-avions"
+version = "0.1.0"
+description = "Détection et classification d'avions militaires sur images satellites (MAR20)"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    # Deep learning : PyTorch (réseaux de neurones) et torchvision (modèles pré-entraînés, transformations d'images)
+    "torch==2.14.1",
+    "torchvision==0.29.1",
+    # Détecteurs YOLO pré-entraînés (licence AGPL-3.0 : le dépôt doit rester public)
+    "ultralytics",
+    # Lecture et manipulation d'images
+    "opencv-python<5",
+    # Machine learning classique (forêts aléatoires, MLP) et métriques (F1, matrice de confusion)
+    "scikit-learn",
+    # Tableaux de données et graphiques pour l'EDA
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "seaborn",
+    # Barres de progression et fichiers de configuration
+    "tqdm",
+    "pyyaml",
+    # Calcul scientifique (regroupement des quasi-doublons)
+    "scipy>=1.17.1",
+    # Interface web de démonstration
+    "gradio>=6.30.0",
+]
+
+[dependency-groups]
+# Outils de développement : ne sont pas nécessaires pour faire tourner l'application
+dev = [
+    "jupyterlab",  # notebooks (EDA, analyse des erreurs)
+    "ipykernel",   # permet à VS Code / Jupyter d'utiliser l'environnement du projet
+    "pytest",      # tests automatiques
+    "ruff",        # vérifie et formate le code
+]
+
+# --- PyTorch avec la carte graphique ---------------------------------------------
+# Sous Windows, le torch publié sur PyPI ne sait utiliser que le processeur (CPU).
+# On indique donc à uv d'aller chercher torch sur l'index officiel de PyTorch :
+#   - Windows (ta machine)  -> version CUDA 13.2, pour utiliser la RTX 4060 ;
+#   - Linux (image Docker)  -> version CPU, beaucoup plus légère.
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cu132", marker = "sys_platform == 'win32'" },
+    { index = "pytorch-cpu", marker = "sys_platform == 'linux'" },
+]
+torchvision = [
+    { index = "pytorch-cu132", marker = "sys_platform == 'win32'" },
+    { index = "pytorch-cpu", marker = "sys_platform == 'linux'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu132"
+url = "https://download.pytorch.org/whl/cu132"
+explicit = true  # cet index ne sert qu'à torch/torchvision, le reste vient de PyPI
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+# --- Notre propre code (dossier src/avions) installé comme un paquet -------------
+# Ça permet d'écrire `from avions.constants import CLASSES` depuis n'importe où
+# (notebooks, scripts, tests).
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/avions"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
