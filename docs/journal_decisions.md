@@ -495,3 +495,24 @@ Les images (68 Mo) sont sur le Drive, d'où le lien partagé dans le rapport, ma
 **Ce qu'on n'a PAS fait :** recalculé sur la validation avec le détecteur propre, le seuil de 0,4 donne une F1 un peu meilleure (0,990 contre 0,984). Mais changer le seuil après avoir vu le test briserait notre engagement. **Le seuil reste à 0,5.** Le seuil de 0,4 est noté comme amélioration possible pour une version future, qu'il faudrait évaluer sur de nouvelles images.
 
 **Leçon pour l'oral :** une erreur de manipulation peut fausser un résultat sans que les chiffres paraissent anormaux. Ce sont les vérifications systématiques qui l'ont révélée : relire ce qui est enregistré, et vérifier l'origine de chaque modèle.
+
+---
+
+## D17 : une interface pour tester le modèle « en direct » sur des images jamais vues (26/10/2026)
+
+**Contexte :** le sujet demande de travailler uniquement avec les images fournies par le prof, sans en ajouter. La première interface permettait de déposer n'importe quelle photo.
+
+**Choix** (`src/avions/app.py`)
+- **Plus de dépôt de photo.** On choisit une image parmi celles **que le modèle n'a jamais vues pendant son entraînement** : les 130 images de validation et les 131 images de test, par une liste déroulante ou au hasard. La liste est construite à partir du fichier de découpage. Un test automatique (`tests/test_app.py`) vérifie qu'aucune image d'entraînement n'est proposée.
+- **Bouton « Analyser »** : les prédictions du modèle, avec les avions sûrs et les avions à vérifier.
+- **Bouton « Vérifier »** : on compare aux vraies annotations, **boîte par boîte**, avec la même règle que pour nos scores (`match_details` dans `src/avions/evaluation.py`) :
+  - vert : bon type ;
+  - orange : mauvais type (par exemple « A19 (vrai A1) ») ;
+  - rouge : fausse alarme ;
+  - violet : avion manqué.
+
+  Un bilan chiffré et un tableau des erreurs accompagnent l'image.
+
+**Intérêt pour l'oral :** la démonstration montre honnêtement où le modèle se trompe, sur des images qu'il n'a jamais vues. Sur l'image 1453, on obtient 0 fausse alarme et 0 avion manqué, et les seules erreurs sont des A1 pris pour des A19, deux types qui se ressemblent beaucoup. C'est l'occasion d'expliquer la matrice de confusion, la précision et le rappel.
+
+Les images de test ont servi une seule fois à l'évaluation finale (D15). Les regarder dans l'interface ne modifie aucun réglage.

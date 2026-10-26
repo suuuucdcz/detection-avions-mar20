@@ -87,10 +87,9 @@ La mAP50 est mesurée sur tous les seuils. Avec les avions « à vérifier », 7
 uv run python scripts/app.py
 ```
 
-La page s'ouvre dans le navigateur (http://127.0.0.1:7860). On y dépose une image satellite ou on choisit un exemple de validation :
-- les avions **sûrs** apparaissent en boîtes épaisses ;
-- les avions **à vérifier** (type incertain) apparaissent en boîtes fines, marqués « ? » ;
-- quand l'image vient du dataset, l'application la compare à la vérité.
+La page s'ouvre dans le navigateur (http://127.0.0.1:7860). Comme le demande le sujet, aucune image extérieure n'est ajoutée : on choisit une image **que le modèle n'a jamais vue pendant son entraînement**, parmi les 130 de validation et les 131 de test (liste déroulante ou bouton « Image au hasard »).
+1. **Analyser** : le modèle dessine ses boîtes. Les avions **sûrs** apparaissent en boîtes épaisses ; les avions **à vérifier** (type incertain) en boîtes fines, marqués « ? ».
+2. **Vérifier** : la comparaison avec les vraies annotations s'affiche à côté, boîte par boîte : 🟩 bon type, 🟧 mauvais type, 🟥 fausse alarme, 🟪 avion manqué. Un bilan et un tableau des erreurs l'accompagnent.
 
 Pour une seule image en ligne de commande : `uv run python scripts/predict.py data/raw/images/1453.jpg`.
 

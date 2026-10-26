@@ -8,7 +8,6 @@ Arrêter : Ctrl + C dans le terminal.
 import argparse
 
 from avions.app import creer_demo
-from avions.constants import RAW_IMAGES_DIR
 
 
 def main():
@@ -24,7 +23,6 @@ def main():
         server_name=args.hote,
         server_port=args.port,
         inbrowser=not args.no_browser,
-        allowed_paths=[str(RAW_IMAGES_DIR)],  # autorise l'affichage des images d'exemple
     )
 
 

@@ -67,33 +67,53 @@ def match_predictions(
 def count_outcomes(
     true_boxes, true_classes, pred_boxes, pred_classes, pred_scores, min_score: float
 ) -> dict:
-    """Décompte lisible à un seuil de confiance donné (celui de l'application).
+    """Décompte lisible à un seuil de confiance donné (celui de l'application), voir match_details."""
+    pred_scores = np.asarray(pred_scores, float)
+    keep = pred_scores >= min_score
+    statuses, _, missed = match_details(
+        true_boxes,
+        true_classes,
+        np.asarray(pred_boxes, float).reshape(-1, 4)[keep],
+        np.asarray(pred_classes)[keep],
+        pred_scores[keep],
+    )
+    return {
+        "bon_type": statuses.count("bon_type"),
+        "mauvais_type": statuses.count("mauvais_type"),
+        "fausses_alarmes": statuses.count("fausse_alarme"),
+        "manques": len(missed),
+    }
+
+
+def match_details(true_boxes, true_classes, pred_boxes, pred_classes, pred_scores):
+    """Le verdict de CHAQUE prédiction face à la vérité (utilisé par l'interface « Vérifier »).
 
     Les prédictions sont prises de la plus sûre à la moins sûre ; chacune est associée à l'avion
     encore libre qu'elle recouvre le mieux (IoU >= 0,5) :
-    - bon type / mauvais type selon la classe prédite ;
-    - FAUSSE ALARME (faux positif) si elle ne recouvre aucun avion libre ;
-    - un avion qu'aucune prédiction ne recouvre est MANQUÉ (faux négatif).
+    - "bon_type" / "mauvais_type" selon la classe prédite ;
+    - "fausse_alarme" (faux positif) si elle ne recouvre aucun avion libre.
+    Un avion qu'aucune prédiction ne recouvre est MANQUÉ (faux négatif).
     Un mauvais type compte à la fois comme faux positif et comme faux négatif.
+
+    Renvoie : le statut de chaque prédiction, l'indice de l'avion réel associé (ou None), et la
+    liste des indices des avions manqués.
     """
     true_boxes = np.asarray(true_boxes, float).reshape(-1, 4)
     pred_boxes = np.asarray(pred_boxes, float).reshape(-1, 4)
     true_classes, pred_classes = np.asarray(true_classes), np.asarray(pred_classes)
     pred_scores = np.asarray(pred_scores, float)
-    counts = {"bon_type": 0, "mauvais_type": 0, "fausses_alarmes": 0}
     iou = box_iou(pred_boxes, true_boxes) if len(true_boxes) else np.zeros((len(pred_boxes), 0))
+    statuses, matched = ["fausse_alarme"] * len(pred_boxes), [None] * len(pred_boxes)
     taken = set()
     for p in np.argsort(-pred_scores):
-        if pred_scores[p] < min_score:
-            continue
         free = [t for t in np.argsort(-iou[p]) if iou[p, t] >= 0.5 and t not in taken]
-        if not free:
-            counts["fausses_alarmes"] += 1
-            continue
-        taken.add(free[0])
-        counts["bon_type" if true_classes[free[0]] == pred_classes[p] else "mauvais_type"] += 1
-    counts["manques"] = len(true_boxes) - len(taken)
-    return counts
+        if free:
+            taken.add(free[0])
+            matched[p] = int(free[0])
+            same_type = true_classes[free[0]] == pred_classes[p]
+            statuses[p] = "bon_type" if same_type else "mauvais_type"
+    missed = [t for t in range(len(true_boxes)) if t not in taken]
+    return statuses, matched, missed
 
 
 class DetectionEvaluator:

@@ -3,7 +3,13 @@
 import numpy as np
 import pytest
 
-from avions.evaluation import DetectionEvaluator, box_iou, count_outcomes, match_predictions
+from avions.evaluation import (
+    DetectionEvaluator,
+    box_iou,
+    count_outcomes,
+    match_details,
+    match_predictions,
+)
 
 
 def test_iou():
@@ -55,3 +61,14 @@ def test_decompte_des_faux_positifs():
         true_boxes, true_classes, pred_boxes, np.array([1, 5, 1, 3]), [0.9, 0.8, 0.7, 0.3], 0.5
     )
     assert counts == {"bon_type": 1, "mauvais_type": 1, "fausses_alarmes": 1, "manques": 1}
+
+
+def test_verdict_de_chaque_boite():
+    true_boxes = np.array([[0, 0, 10, 10], [50, 50, 60, 60], [100, 100, 110, 110]])
+    pred_boxes = np.array([[0, 0, 10, 10], [50, 50, 60, 60], [200, 200, 210, 210]])
+    statuses, matched, missed = match_details(
+        true_boxes, np.array([1, 2, 3]), pred_boxes, np.array([1, 5, 1]), [0.9, 0.8, 0.7]
+    )
+    assert statuses == ["bon_type", "mauvais_type", "fausse_alarme"]
+    assert matched == [0, 1, None]  # avion réel associé à chaque prédiction
+    assert missed == [2]  # le 3e avion n'est recouvert par aucune prédiction

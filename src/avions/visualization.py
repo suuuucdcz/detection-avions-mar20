@@ -21,15 +21,16 @@ def draw_boxes(
     boxes: list[tuple[int, int, int, int]],
     labels: list[str],
     thickness: int = 2,
+    colors: list[tuple[int, int, int]] | None = None,
 ) -> np.ndarray:
     """Dessine des boîtes (xmin, ymin, xmax, ymax) et leur étiquette sur une COPIE de l'image RGB.
 
-    Chaque étiquette doit commencer par un nom de classe (ex. "A10" ou "A10 0.93") :
-    il sert à choisir la couleur de la boîte.
+    Sans `colors`, chaque étiquette doit commencer par un nom de classe (ex. "A10 0.93") : il
+    sert à choisir la couleur de la boîte. Avec `colors`, chaque boîte prend la couleur donnée.
     """
     image = image.copy()  # on ne modifie pas l'image d'origine
-    for (xmin, ymin, xmax, ymax), label in zip(boxes, labels, strict=True):
-        color = class_color(label.split()[0])
+    colors = colors or [class_color(label.split()[0]) for label in labels]
+    for (xmin, ymin, xmax, ymax), label, color in zip(boxes, labels, colors, strict=True):
         cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color, thickness)
         cv2.putText(
             image, label, (xmin, max(ymin - 5, 12)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2
