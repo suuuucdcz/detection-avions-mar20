@@ -192,9 +192,8 @@ def creer_demo() -> gr.Blocks:
         return image, resume_md(detections, duree, seuil), "", f1_md(cumul), image_id, cumul
 
     def corriger_clic(image_id, seuil, cumul):
-        detections, duree = predire(
-            image_id, seuil
-        )  # refaite à chaque fois : 0,2 s, toujours à jour
+        # la détection est refaite à chaque fois (0,2 s) : la correction suit toujours le curseur
+        detections, duree = predire(image_id, seuil)
         correction = corriger(verite[verite["image_id"] == image_id], detections)
         # le F1 cumulé n'utilise que le seuil officiel (round : le curseur peut renvoyer 0.5000001)
         au_seuil_officiel = round(seuil, 2) == DEFAULT_MIN_SCORE

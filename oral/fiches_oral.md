@@ -9,7 +9,7 @@ Le meilleur réflexe est de répondre en trois temps :
 
 Un exemple concret impressionne beaucoup plus qu'une définition récitée.
 
-Tous les chiffres viennent de notre projet. Le détail se trouve dans [journal_decisions.md](journal_decisions.md).
+Tous les chiffres viennent de notre projet. Le détail se trouve dans [journal_decisions.md](../docs/journal_decisions.md).
 
 ---
 

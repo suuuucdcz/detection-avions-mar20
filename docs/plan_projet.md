@@ -104,7 +104,7 @@ Une démo qui marche vaut mieux que dix idées à moitié finies.
 - [ ] Slides : des schémas plutôt que du code, dans l'ordre des 6 étapes.
 - [ ] Vidéo de secours de la démo.
 - [ ] Deux répétitions chronométrées (10 min), avec un temps de parole équilibré.
-- [ ] Réviser les fiches d'oral ([fiches_oral.md](fiches_oral.md)).
+- [ ] Réviser les fiches d'oral ([oral/fiches_oral.md](../oral/fiches_oral.md)).
 
 ## Métriques
 

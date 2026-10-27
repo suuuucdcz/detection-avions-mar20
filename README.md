@@ -11,11 +11,12 @@ Projet du module « Introduction à l'IA » (IPSA Toulouse). L'application **loc
 | Le corpus de test annoté par le modèle | [reports/corpus_test_annote/](reports/corpus_test_annote/) : 131 XML, aperçus, tableau, notice |
 | Une démonstration qui fonctionne | `uv run python scripts/app.py` (voir [Lancer la démo](#lancer-la-démo)) |
 
-Pour comprendre et présenter le projet :
-- [docs/guide_projet.html](docs/guide_projet.html) : le projet étape par étape, avec les figures, et les 12 notions de l'oral. GitHub n'affiche que son code : l'ouvrir dans un navigateur après avoir cloné ou téléchargé le dépôt (Code > Download ZIP) ;
+Pour comprendre et présenter le projet, tout est dans le dossier [oral/](oral/) (voir [oral/LISEZ-MOI.md](oral/LISEZ-MOI.md)) :
+- [oral/guide_projet.html](oral/guide_projet.html) : le projet étape par étape, avec les figures, les 12 notions de l'oral et le code fichier par fichier. GitHub n'affiche que son code : l'ouvrir dans un navigateur après avoir cloné ou téléchargé le dépôt (Code > Download ZIP) ;
 - [docs/architecture.md](docs/architecture.md) : l'architecture en détail ;
 - [docs/journal_decisions.md](docs/journal_decisions.md) : chaque choix et sa justification (D1 à D21) ;
-- [docs/fiches_oral.md](docs/fiches_oral.md) : les fiches de révision des 12 notions.
+- [oral/fiches_oral.md](oral/fiches_oral.md) : les fiches de révision des 12 notions ;
+- `oral/lancer_demo.bat` et `oral/ouvrir_le_code.bat` : un double-clic pour lancer la démo, ou pour ouvrir le code à montrer dans VS Code.
 
 ## L'architecture, en deux étages
 
@@ -96,7 +97,8 @@ Pour vérifier que tout fonctionne : `uv run pytest` (31 tests).
 | `models/` | les deux modèles finaux : le détecteur et le classifieur |
 | `runs/` | les traces des entraînements et des évaluations : courbes, métriques, matrices de confusion |
 | `reports/` | le corpus de test annoté et les figures de l'analyse des données |
-| `docs/` | le rapport, le guide (et `guide_images/`, des copies allégées des figures de l'EDA), l'architecture, le journal des décisions, les fiches de l'oral, le plan |
+| `docs/` | le rapport, l'architecture, le journal des décisions, le plan |
+| `oral/` | la préparation de l'oral : le guide (et `guide_images/`, des copies allégées des figures de l'EDA), les fiches, les raccourcis de la démo et du code |
 
 ## Les étapes du projet
 
