@@ -2,7 +2,7 @@
 
 **Rapport de projet** · IPSA Toulouse · module « Introduction à l'IA » (Julien Breton)
 
-**Binôme :** Mathis Derory et *[nom du binôme à compléter]*
+**Binôme :** Mathis Derory et Salomé Pinte Voisin
 
 - **Dépôt Git :** [github.com/suuuucdcz/detection-avions-mar20](https://github.com/suuuucdcz/detection-avions-mar20)
 - **Corpus de test annoté par le modèle :** […/detection-avions-mar20/tree/main/reports/corpus_test_annote](https://github.com/suuuucdcz/detection-avions-mar20/tree/main/reports/corpus_test_annote)
