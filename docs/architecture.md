@@ -91,10 +91,12 @@ Avec les avions « à vérifier », **785 avions sur 788** sont présentés à l
 
 ## 5. L'application
 
-L'interface web (Gradio, `uv run python scripts/app.py`) propose les **131 images de test** :
-1. on choisit une image dans la galerie (quatre images conseillées, marquées ★, sont en tête), ou au hasard ;
-2. **« Détecter les avions »** affiche les avions sûrs (boîtes épaisses) et les avions à vérifier (boîtes fines « ? ») ;
-3. **« Comparer avec la vérité »** juge chaque boîte face aux vraies annotations : vert = bon type, orange = mauvais type, rouge = fausse alarme, violet = avion manqué.
+L'interface web (Gradio, `uv run python scripts/app.py`) propose les **131 images de test**. L'écran se lit de gauche à droite :
+1. on **choisit** une image : un exemple conseillé (★), une vignette, ou au hasard ;
+2. **« Détecter les avions »** : le modèle **répond** (boîtes bleues), là où sa confiance finale atteint 0,5 ;
+3. **« Corriger avec la vérité »** : c'est **oui ou non**. Chaque réponse est **juste** (vert) ou **fausse** (rouge : mauvais type ou « pas un avion »), et chaque vrai avion sans réponse est **oublié** (rouge pointillé).
+
+C'est exactement la règle de nos scores officiels : additionnés sur les 131 images, les bilans redonnent 729 justes, 12 fausses et 50 oubliés. Le second onglet, « Scores sur tout le test », les présente. Le niveau « à vérifier » reste dans le corpus annoté, mais pas dans l'interface (décision D19).
 
 Le **corpus de test annoté** (fichiers XML au format Pascal VOC, plus des aperçus) est produit par `scripts/annotate_corpus.py`.
 
@@ -110,5 +112,5 @@ src/avions/
 └── app.py         l'interface web
 scripts/           les commandes (préparer, entraîner, évaluer, annoter, lancer l'interface)
 configs/           les réglages de chaque entraînement
-tests/             28 tests automatiques
+tests/             30 tests automatiques
 ```

@@ -31,6 +31,8 @@ dependencies = [
     "scipy>=1.17.1",
     # Interface web de démonstration
     "gradio>=6.30.0",
+    # Dessin des boîtes de l'interface (texte accentué, ✓ et ✗, pointillés)
+    "pillow>=12",
 ]
 
 [dependency-groups]

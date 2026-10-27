@@ -298,4 +298,4 @@ Environ 30 % d'erreurs en moins, et le meilleur score est atteint 3 fois plus vi
 | **Backbone** | la partie d'un réseau qui extrait les caractéristiques de l'image |
 | **Fuite de données** | quand des informations du test se retrouvent dans l'entraînement, ce qui fausse le score |
 | **Témoin** | le modèle de comparaison (ici, YOLO à 20 classes) |
-| **Avion « à vérifier »** | une détection incertaine, montrée à part pour qu'un humain tranche (l'« humain dans la boucle » du cours) |
+| **Avion « à vérifier »** | une détection incertaine, montrée à part pour qu'un humain tranche (l'« humain dans la boucle » du cours). On le garde dans le corpus annoté, mais pas dans l'interface, où la correction est en oui / non |

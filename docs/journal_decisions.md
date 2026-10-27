@@ -527,3 +527,32 @@ Les images de test ont servi une seule fois à l'évaluation finale (D15). Les r
 - **Deux gros boutons** : « 🔍 Détecter les avions » puis « ✅ Comparer avec la vérité ». Le second lance la détection tout seul si on l'a oubliée.
 - **Des cartes chiffrées** à la place des longs textes : en haut, les scores officiels sur le test (F1, précision, fausses alarmes, mauvais types) ; sous chaque image, le bilan de l'image.
 - Les réglages (seuil, avions à vérifier) et les tableaux détaillés sont rangés dans des panneaux repliables : ils restent accessibles sans encombrer l'écran.
+
+## D19 : la vérité en oui / non, et un écran qui se lit de gauche à droite (27/10/2026)
+
+**Contexte :**
+- Le niveau « à vérifier » troublait la démonstration. Puisqu'on travaille sur le dataset annoté du prof, la vérité est connue, donc la correction doit être **oui ou non**, sans nuance.
+- La disposition de D18 donnait une impression d'éparpillement : les scores globaux étaient mélangés aux résultats de l'image, la colonne de gauche empilait six éléments, et la légende et les tableaux étaient loin de l'image.
+
+**Choix** (`src/avions/app.py`, `src/avions/visualization.py`)
+- **Plus de niveau « à vérifier » dans l'interface.** Le modèle répond seulement là où sa confiance finale atteint 0,5. C'est exactement la règle de nos scores officiels : additionnés sur les 131 images, les bilans par image redonnent 729 justes, 9 mauvais types, 3 « pas un avion » et 50 oubliés (vérifié image par image).
+- **Correction binaire** : chaque réponse est **juste** (vert) ou **fausse** (rouge, avec la raison : « A19, vrai : A1 » ou « pas un avion ») ; chaque vrai avion sans réponse est **oublié** (rouge pointillé).
+- **Trois colonnes, lues de gauche à droite** :
+  1. choisir (exemples, hasard, galerie) ;
+  2. l'image en grand, sur fond sombre ;
+  3. « le modèle répond » puis « on corrige », chaque bouton au-dessus de son résultat.
+
+  Le bilan de l'image utilise les mêmes pastilles que les boîtes : il sert de légende.
+- **Les scores globaux ont leur propre onglet**, « Scores sur tout le test » : justes, fausses, oubliés, précision, rappel, F1, mAP50, et la comparaison avec le témoin. L'onglet de démonstration ne montre que l'image en cours.
+- **Cinq exemples conseillés**, un par situation :
+  - 883 : sans faute ;
+  - 3803 : A1 ou A19 ? ;
+  - 3256 : 5 A13 pris pour des A15 ;
+  - 3734 : 2 « pas un avion » ;
+  - 3607 : 50 avions serrés.
+- **Dessin lisible** : étiquettes en pastille (Pillow), qui gèrent les accents, ✓ et ✗. Au-delà de 30 boîtes, les réponses justes n'ont pas d'étiquette.
+- Testé à 1536 × 864 et 1366 × 768 : tout tient sur un écran, sans faire défiler.
+
+**Méthode :** trois propositions de disposition indépendantes, chacune avec son angle (l'oral, un utilisateur débutant, le rendu visuel), puis un jury qui les a notées et fusionnées.
+
+Le niveau « à vérifier » reste dans le pipeline et dans le corpus annoté (D14, D15).

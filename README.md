@@ -72,7 +72,7 @@ Les étapes suivent la démarche du prof. Les choix et leurs raisons sont dans [
 | 3. Détection | YOLO11n à 1 classe « avion », entraîné sur Colab : rappel 0,997 en validation | `configs/detecteur_1classe.yaml`, `scripts/train_detector.py`, `notebooks/colab_entrainement.ipynb` | `models/detecteur_1classe.pt`, courbes dans `runs/detecteur_1classe/` |
 | 3 bis. Témoin | YOLO11n à 20 classes, pour comparer : mAP@0.5 de 0,986 en validation | `configs/detecteur_20classes.yaml` | `models/detecteur_20classes.pt`, `runs/detecteur_20classes/` |
 | 4. Classification | vignettes ; forêt aléatoire (macro-F1 de 0,614) ; **ResNet-18 pré-entraîné : macro-F1 de 0,996** ; sans pré-entraînement : 0,973 ; petit CNN : 0,690 | `scripts/make_crops.py`, `scripts/train_baseline.py`, `scripts/train_classifier.py`, `configs/classifieur_*.yaml`, `notebooks/colab_classification.ipynb` | `runs/baseline_rf/`, `runs/classifieur_*/`, `models/` |
-| 5. Intégration | chaîne complète détecteur → vignettes → classifieur : mAP50 de 0,990 en validation, contre 0,968 pour le témoin ; interface Gradio avec avions « à vérifier » (D14) | `src/avions/pipeline.py`, `scripts/predict.py`, `scripts/evaluate_systems.py` | `runs/comparaison_val/`, `reports/figures/predictions/`, `scripts/app.py` |
+| 5. Intégration | chaîne complète détecteur → vignettes → classifieur : mAP50 de 0,990 en validation, contre 0,968 pour le témoin ; avions « à vérifier » dans le corpus annoté (D14), interface Gradio (D17 à D19) | `src/avions/pipeline.py`, `scripts/predict.py`, `scripts/evaluate_systems.py` | `runs/comparaison_val/`, `reports/figures/predictions/`, `scripts/app.py` |
 | 6. Déploiement | Docker *(séance 5)* | *(à venir)* | *(à venir)* |
 
 ## Résultats finaux (jeu de test : 131 images jamais vues, 788 avions)
@@ -92,12 +92,12 @@ La mAP50 est mesurée sur tous les seuils. Avec les avions « à vérifier », 7
 uv run python scripts/app.py
 ```
 
-La page s'ouvre dans le navigateur (http://127.0.0.1:7860). Comme le demande le sujet, aucune image extérieure n'est ajoutée : l'interface propose **les 131 images de test**, que le modèle n'a jamais vues pendant son entraînement. Quatre images conseillées (★) sont placées en tête de la galerie.
-1. **Choisir une image** : un clic sur une vignette, ou le bouton « 🎲 Image au hasard ».
-2. **🔍 Détecter les avions** : le modèle dessine ses boîtes. Les avions **sûrs** apparaissent en boîtes épaisses ; les avions **à vérifier** (type incertain) en boîtes fines, marqués « ? ».
-3. **✅ Comparer avec la vérité** : la comparaison avec les vraies annotations s'affiche à côté, boîte par boîte : 🟩 bon type, 🟧 mauvais type, 🟥 fausse alarme, 🟪 avion manqué. Des cartes chiffrées résument le résultat ; le détail est dans « Détails boîte par boîte ».
+La page s'ouvre dans le navigateur (http://127.0.0.1:7860). Comme le demande le sujet, aucune image extérieure n'est ajoutée : l'interface propose **les 131 images de test**, que le modèle n'a jamais vues pendant son entraînement. L'écran se lit de gauche à droite, en trois colonnes :
+1. **Choisir une image** (à gauche) : un des cinq exemples conseillés (★), une vignette de la galerie, ou « 🎲 Image au hasard ». Elle s'affiche en grand au centre.
+2. **🔍 Détecter les avions** : le modèle répond par des boîtes bleues, là où sa confiance finale atteint 0,5, comme pour nos scores officiels.
+3. **✅ Corriger avec la vérité** : c'est **oui ou non**. Chaque réponse devient 🟩 **juste** ou 🟥 **fausse** (la raison est écrite : « A19, vrai : A1 », « pas un avion »), et chaque vrai avion sans réponse est **oublié** (rouge pointillé). Le bilan de l'image sert de légende ; le détail est dans « Détail boîte par boîte ».
 
-Le seuil de confiance et l'affichage des avions « à vérifier » se règlent dans l'onglet « Réglages ».
+Additionnés sur les 131 images, ces bilans redonnent exactement les scores officiels, présentés dans le second onglet, « Scores sur tout le test ». Le seuil de confiance se règle dans « ⚙ Seuil de confiance ». Pour l'oral sur un projecteur 1366 × 768, passer le navigateur en plein écran (F11).
 
 Pour une seule image en ligne de commande : `uv run python scripts/predict.py data/raw/images/1453.jpg`.
 

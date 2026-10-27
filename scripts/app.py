@@ -7,7 +7,7 @@ Arrêter : Ctrl + C dans le terminal.
 
 import argparse
 
-from avions.app import CSS, THEME, creer_demo
+from avions.app import CSS, JS, THEME, creer_demo
 
 
 def main():
@@ -23,8 +23,10 @@ def main():
         server_name=args.hote,
         server_port=args.port,
         inbrowser=not args.no_browser,
-        theme=THEME,  # couleurs et style de l'interface
-        css=CSS,
+        theme=THEME,  # couleurs et police de l'interface
+        css=CSS,  # disposition et style
+        js=JS,  # thème clair forcé
+        footer_links=[],  # pas de pied de page Gradio
     )
 
 
