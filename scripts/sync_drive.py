@@ -17,12 +17,31 @@ les points de sauvegarde intermédiaires des entraînements (dossiers weights/ ;
 finaux sont dans models/).
 """
 
+import os
 import shutil
 from collections import Counter
 from pathlib import Path
 
 from avions.constants import PROJECT_ROOT
-from avions.drive import find_drive_project_dir
+
+# Le Drive apparaît sur le PC comme un lecteur grâce à « Google Drive pour ordinateur » ;
+# le dossier « projet_avions » a la même arborescence que le projet.
+DRIVE_FOLDER_NAME = "projet_avions"
+# Emplacements habituels du Drive sur le PC (le nom dépend de la langue de Windows).
+# Sur un autre PC (ex. celui du binôme), on peut indiquer le sien avec la variable
+# d'environnement AVIONS_DRIVE_DIR.
+DRIVE_ROOT_CANDIDATES = [Path("G:/Mon Drive"), Path("G:/My Drive")]
+
+
+def find_drive_project_dir() -> Path | None:
+    """Renvoie le dossier « projet_avions » du Drive sur ce PC, ou None si le Drive est absent."""
+    if "AVIONS_DRIVE_DIR" in os.environ:
+        return Path(os.environ["AVIONS_DRIVE_DIR"])
+    for root in DRIVE_ROOT_CANDIDATES:
+        if root.exists():
+            return root / DRIVE_FOLDER_NAME
+    return None
+
 
 EXCLUDED_NAMES = {
     ".venv",

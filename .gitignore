@@ -10,11 +10,14 @@ __pycache__/
 data/*
 !data/splits/
 
-# Poids des modèles (139 Mo) : trop lourds pour Git, ils sont sur le Drive (dossier models/)
-models/
+# Poids des modèles : seuls les 2 modèles finaux (50 Mo) sont dans Git, pour que la démo se lance
+# après un simple clone. Les témoins et les modèles de comparaison (90 Mo) restent sur le Drive.
+models/*
 *.pt
 *.joblib
 *.onnx
+!models/detecteur_1classe.pt
+!models/classifieur_resnet18.pt
 # Résultats des entraînements (runs/) : versionnés comme preuve des scores (courbes,
 # métriques, matrices de confusion), sauf les points de sauvegarde intermédiaires
 runs/**/weights/
@@ -31,6 +34,6 @@ Thumbs.db
 # Poids téléchargés par Ultralytics (modèles pré-entraînés, vérification AMP)
 /weights/
 
-# Corpus de test annoté : les images (68 Mo) sont sur le Drive, seuls les XML, le tableau et le LISEZMOI vont dans Git
+# Corpus de test annoté : les XML, les aperçus (boîtes dessinées), le tableau et le LISEZMOI sont
+# dans Git ; les images d'origine (44 Mo), qui viennent du dataset du prof, restent dans data/raw/
 reports/corpus_test_annote/images/
-reports/corpus_test_annote/apercus/

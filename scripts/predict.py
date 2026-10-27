@@ -1,7 +1,7 @@
 """Démo : détecte et classe les avions d'une image satellite, et enregistre l'image annotée.
 
 Lancer depuis la racine du projet :
-    uv run python scripts/predict.py data/raw/images/1008.jpg
+    uv run python scripts/predict.py data/raw/images/1453.jpg
 
 Résultat : l'image annotée dans reports/figures/predictions/, et la liste des avions trouvés.
 """

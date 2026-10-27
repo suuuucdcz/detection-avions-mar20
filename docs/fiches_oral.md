@@ -101,9 +101,11 @@ IA  ⊃  Machine Learning  ⊃  Deep Learning
 
 | Modèle | Entraînement | Validation | Diagnostic |
 |---|---|---|---|
-| Forêt aléatoire | 100 % | 69 % | **overfitting** : énorme écart, elle a appris par cœur |
-| Petit CNN maison | erreur élevée (1,50) | erreur élevée (1,51) | **underfitting** : trop simple, mauvais partout |
-| ResNet-18 pré-entraîné | erreur de 0,73 | erreur de 0,73 | **bon équilibre**, macro-F1 de 0,958 sur le test |
+| Forêt aléatoire | accuracy de 100 % | accuracy de 69 % | **overfitting** : énorme écart, elle a appris par cœur |
+| Petit CNN maison | loss élevée (1,50) | loss élevée (1,51) | **underfitting** : trop simple, mauvais partout |
+| ResNet-18 pré-entraîné | loss de 0,73 | loss de 0,73 | **bon équilibre**, macro-F1 de 0,958 sur le test |
+
+La loss n'est pas un pourcentage d'erreur : avec le label smoothing utilisé (0,1), elle ne descend pas sous 0,67 environ. En validation, l'accuracy est de 99,6 % pour le ResNet-18 et de 75,1 % pour le petit CNN.
 
 **Comment on le combat :**
 - l'**early stopping** : on arrête l'entraînement quand la validation ne progresse plus. Notre détecteur s'est arrêté seul à l'epoch 67 sur 80 ;
@@ -123,8 +125,8 @@ IA  ⊃  Machine Learning  ⊃  Deep Learning
 **Comment ça marche, à chaque étape :**
 1. le réseau fait une prédiction sur un paquet d'images (un **batch**) ;
 2. on mesure son **erreur**, la *loss* ;
-3. on calcule le **gradient** : dans quel sens modifier chaque poids pour diminuer l'erreur ;
-4. on modifie un peu chaque poids dans ce sens. La taille du pas s'appelle le **learning rate**.
+3. on calcule le **gradient** de la loss par rapport à chaque poids, par **rétropropagation** : il indique dans quel sens l'erreur augmente le plus vite ;
+4. on déplace chaque poids dans le sens **opposé** : w ← w − η × gradient. Le coefficient η s'appelle le **learning rate**. Comme on le fait batch par batch, on parle de descente de gradient stochastique.
 
 On recommence des milliers de fois. Un passage complet sur toutes les images s'appelle une **epoch**.
 
@@ -145,7 +147,7 @@ On recommence des milliers de fois. Un passage complet sur toutes les images s'a
 
 **En une phrase :**
 - un **arbre de décision** classe un exemple en posant une suite de **questions simples**, du genre « la largeur est-elle > 120 pixels ? » ;
-- une **forêt aléatoire** fait **voter** des centaines d'arbres, chacun entraîné sur un tirage au hasard des données.
+- une **forêt aléatoire** fait **voter** des centaines d'arbres. Chacun est entraîné sur un tirage au hasard, avec remise, des exemples (bootstrap), et à chaque question il ne choisit que parmi une partie des caractéristiques tirée au hasard.
 
 **Pourquoi une forêt plutôt qu'un seul arbre ?** Un arbre seul colle trop à ses données d'entraînement (overfitting). En faisant voter beaucoup d'arbres un peu différents, les erreurs se compensent.
 
@@ -171,8 +173,10 @@ On recommence des milliers de fois. Un passage complet sur toutes les images s'a
 - **F1** = 2 × précision × rappel / (précision + rappel) : un **compromis** entre les deux, élevé seulement si les deux le sont.
 
 **Faux positif et faux négatif :**
-- un **faux positif** est une fausse alarme : une boîte sans avion, ou le mauvais type ;
-- un **faux négatif** est un avion manqué.
+- un **faux positif** est une réponse fausse : une boîte sans avion, ou le mauvais type ;
+- un **faux négatif** est un vrai avion sans bonne réponse : oublié, ou mal classé.
+
+Un mauvais type compte donc dans les deux. Au test : 12 faux positifs (3 fausses alarmes + 9 mauvais types) et 59 faux négatifs (50 oubliés + 9 mauvais types).
 
 **Dans notre projet** (test, seuil de 0,5) :
 - **précision de 0,984**, **rappel de 0,925**, **F1 de 0,954** ;
@@ -193,7 +197,7 @@ Monter le seuil donne moins de fausses alarmes, mais plus d'avions manqués.
 
 ## 9. Le perceptron et les réseaux de neurones (MLP)
 
-**Le perceptron**, ou neurone formel (vu en cours), calcule une **somme pondérée** de ses entrées, ajoute un biais, puis applique une **fonction d'activation** qui décide de la sortie.
+**Le perceptron**, ou neurone formel (vu en cours), calcule une **somme pondérée** de ses entrées, ajoute un biais, puis applique une **fonction seuil** : il répond 0 ou 1. C'est un classifieur **linéaire** : il ne sait séparer que des classes séparables par une droite (un hyperplan), et il échoue sur le XOR. Le MLP lève cette limite.
 
 ```
 entrées x1, x2, … → (w1·x1 + w2·x2 + … + b) → activation → sortie
@@ -221,7 +225,7 @@ Nous n'avons pas entraîné de MLP seul : sur des images, un CNN est bien plus a
 **Comment ça marche :**
 1. **les premières couches** détectent des motifs simples : des bords, des lignes ;
 2. **les couches suivantes** combinent ces motifs en formes plus complexes : une aile, un fuselage, des moteurs ;
-3. le **pooling** réduit la taille de l'image à chaque étape, et le réseau voit de plus en plus « large » ;
+3. le **pooling** (ou des convolutions avec un pas de 2) réduit la taille des cartes de caractéristiques au fil des couches, et le réseau voit de plus en plus « large » ;
 4. **à la fin**, une couche de type perceptron décide de la classe.
 
 Avantage : le même filtre sert partout dans l'image. Il y a beaucoup moins de poids qu'un MLP, et un avion est reconnu quelle que soit sa position.

@@ -37,7 +37,7 @@ Ce document décrit le fonctionnement de notre application de détection et de c
 ```
 
 **Pourquoi deux étages plutôt qu'un seul réseau ?**
-- **Le détecteur** n'a qu'une question à résoudre, « avion ou pas », et il dispose des 7 870 exemples pour l'apprendre. Le déséquilibre entre les 20 types ne le gêne pas.
+- **Le détecteur** n'a qu'une question à résoudre, « avion ou pas », et tous les avions du jeu d'entraînement lui servent d'exemples, quel que soit leur type (6 295 avions). Le déséquilibre entre les 20 types ne le gêne pas.
 - **Le classifieur** voit chaque avion **en gros plan**, et peut apprendre avec des rotations dans tous les sens.
 - **On peut évaluer chaque étage séparément**, et savoir si une erreur vient d'un avion manqué ou d'un avion mal reconnu.
 - **C'est la démarche conseillée par le prof** : vignettes, classification, détection, intégration.
@@ -87,16 +87,16 @@ Avec les avions « à vérifier », **785 avions sur 788** sont présentés à l
 
 **Limites :**
 - les images de test viennent des mêmes bases aériennes que l'entraînement : les scores sont sans doute un peu optimistes pour des bases jamais vues ;
-- les confusions restantes concernent surtout **A1 et A19**, deux chasseurs très ressemblants.
+- les erreurs de type restantes touchent des avions qui se ressemblent : surtout **A13 pris pour A15** (5 des 9 mauvais types du test) et **A1 / A19** ; les oublis touchent surtout A16 et A1.
 
 ## 5. L'application
 
 L'interface web (Gradio, `uv run python scripts/app.py`) propose les **131 images de test**. L'écran se lit de gauche à droite :
-1. on **choisit** une image : un exemple conseillé (★), une vignette, ou au hasard ;
+1. on **choisit** une image dans la galerie, ou au hasard (l'interface s'ouvre sur l'exemple 3803) ;
 2. **« Détecter les avions »** : le modèle **répond** (boîtes bleues), là où sa confiance finale atteint 0,5 ;
-3. **« Corriger avec la vérité »** : c'est **oui ou non**. Chaque réponse est **juste** (vert) ou **fausse** (rouge : mauvais type ou « pas un avion »), et chaque vrai avion sans réponse est **oublié** (rouge pointillé).
+3. **« Corriger avec la vérité »** : c'est **oui ou non**. Chaque réponse est **juste** (vert) ou **fausse** (rouge : mauvais type, doublon ou « aucun avion annoté »), et chaque vrai avion sans réponse est **oublié** (rouge pointillé).
 
-En haut à droite, le **F1 cumulé** additionne les avions de toutes les images corrigées ; il atteint exactement 0,954 après les 131 images. C'est exactement la règle de nos scores officiels : additionnés sur les 131 images, les bilans redonnent 729 justes, 12 fausses et 50 oubliés. Le second onglet, « Scores sur tout le test », les présente. Le niveau « à vérifier » reste dans le corpus annoté, mais pas dans l'interface (décision D19).
+En haut, sous le titre, le **F1 cumulé** additionne les avions de toutes les images corrigées ; il atteint exactement 0,954 après les 131 images. C'est exactement la règle de nos scores officiels : additionnés sur les 131 images, les bilans redonnent 729 justes, 12 fausses et 50 oubliés. Le niveau « à vérifier » reste dans le corpus annoté, mais pas dans l'interface (décision D19).
 
 Le **corpus de test annoté** (fichiers XML au format Pascal VOC, plus des aperçus) est produit par `scripts/annotate_corpus.py`.
 

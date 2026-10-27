@@ -20,16 +20,11 @@ CROP_SIZE = 256  # taille des vignettes enregistrées, en pixels
 PAD_VALUE = 128  # gris neutre pour compléter au-delà du bord de l'image
 
 
-def make_crop(
-    image: np.ndarray,
-    box: tuple[float, float, float, float],
-    scale: float = CROP_SCALE,
-    size: int = CROP_SIZE,
-) -> np.ndarray:
+def make_crop(image: np.ndarray, box: tuple[float, float, float, float]) -> np.ndarray:
     """Découpe un carré centré sur la boîte (xmin, ymin, xmax, ymax) et le redimensionne."""
     xmin, ymin, xmax, ymax = box
     center_x, center_y = (xmin + xmax) / 2, (ymin + ymax) / 2
-    half_side = scale * max(xmax - xmin, ymax - ymin) / 2
+    half_side = CROP_SCALE * max(xmax - xmin, ymax - ymin) / 2
     x0, y0 = round(center_x - half_side), round(center_y - half_side)
     x1, y1 = round(center_x + half_side), round(center_y + half_side)
 
@@ -43,6 +38,6 @@ def make_crop(
     square = image[y0 + pad : y1 + pad, x0 + pad : x1 + pad]
 
     # INTER_AREA pour réduire (net, sans crénelage), INTER_LINEAR pour agrandir
-    shrinking = square.shape[0] > size
+    shrinking = square.shape[0] > CROP_SIZE
     interpolation = cv2.INTER_AREA if shrinking else cv2.INTER_LINEAR
-    return cv2.resize(square, (size, size), interpolation=interpolation)
+    return cv2.resize(square, (CROP_SIZE, CROP_SIZE), interpolation=interpolation)

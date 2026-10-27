@@ -18,7 +18,7 @@ Format : **contexte → options → choix → pourquoi → preuve chiffrée** (�
 
 **Pourquoi**
 - C'est la démarche conseillée par le prof : vignettes, puis classification, puis détection.
-- Le détecteur apprend une seule notion (« avion ») à partir des 7 870 exemples. Il n'est donc pas gêné par le déséquilibre entre classes.
+- Le détecteur apprend une seule notion (« avion »), et tous les avions du jeu d'entraînement lui servent d'exemples, quel que soit leur type (6 295 avions). Il n'est donc pas gêné par le déséquilibre entre classes.
 - Le classifieur voit chaque avion en gros plan, et on peut le faire tourner librement pendant l'entraînement (augmentation).
 - On peut évaluer chaque étage séparément. Une erreur vient-elle d'un avion manqué ou d'un avion mal reconnu ?
 
@@ -157,7 +157,7 @@ Pour chaque classe, la part en validation ou en test s'écarte d'au plus 1,2 poi
 
 **Choix :** on calcule une empreinte visuelle (dHash, 256 bits) pour chaque image. Les images à **80 bits ou moins** les unes des autres forment un **groupe**, et un groupe n'est jamais coupé entre deux jeux. On obtient 15 groupes, de 3 images au plus.
 
-**Pourquoi ce seuil :** les vraies paires étaient à 46, 72 et 73 bits, et on garde une marge. Regrouper par erreur deux images différentes ne coûte presque rien. Séparer deux quasi-doublons, en revanche, fausserait l'évaluation.
+**Pourquoi ce seuil :** les vraies paires étaient à 46, 72 et 73 bits, et on garde une marge. Une relecture ultérieure a trouvé une 4e paire, 1092 / 2359 (76 bits) : la même base, décalée d'environ 250 px. Elle était déjà regroupée grâce à ce seuil, dans le même jeu. Regrouper par erreur deux images différentes ne coûte presque rien. Séparer deux quasi-doublons, en revanche, fausserait l'évaluation.
 
 **Limite :** deux vues très décalées d'une même base ne sont pas repérées par cette empreinte.
 
@@ -352,7 +352,7 @@ La confiance finale d'un avion vaut la confiance du détecteur × celle du class
 
 ## D14 : seuil de l'application, faux positifs et avions « à vérifier » (26/10/2026)
 
-**Contexte :** on nous a conseillé de faire très attention aux **faux positifs**. Avec le premier réglage de l'application (seuil de 0,25 sur la seule confiance du détecteur), la validation comptait **54 fausses alarmes** pour 787 avions.
+**Contexte :** on nous a conseillé de faire très attention aux **faux positifs**. Avec le premier réglage de l'application (seuil de 0,25 sur la seule confiance du détecteur), la validation comptait **43 fausses alarmes** pour 787 avions (54 lors de la première mesure, faite avec le détecteur altéré de D16).
 
 **Vérifications préalables**
 - Aucune image n'est commune aux jeux train, validation et test.
@@ -365,17 +365,17 @@ La confiance finale d'un avion vaut la confiance du détecteur × celle du class
 
 | Règle | Bon type | Mauvais type | Fausses alarmes | Manqués | F1 |
 |---|---|---|---|---|---|
-| Détecteur ≥ 0,25 (ancien réglage) | 781 | 6 | 54 | 0 | — |
+| Détecteur ≥ 0,25 (ancien réglage) | 784 | 3 | 43 | 0 | — |
 | Confiance finale ≥ 0,25 | 784 | 3 | 16 | 0 | 0,986 |
 | Confiance finale ≥ 0,4 | 779 | 2 | 5 | 6 | 0,990 |
 | **Confiance finale ≥ 0,5 (choisi)** | **767** | **1** | **4** | 19 | **0,984** |
 | Confiance finale ≥ 0,6 | 748 | 0 | 3 | 39 | 0,973 |
-
-Ce tableau a été recalculé avec le détecteur propre (D16), sauf la première ligne, mesurée avant l'incident.
 | Témoin YOLO à 20 classes ≥ 0,5 | 769 | 15 | 19 | 3 | 0,967 |
 
+Tout ce tableau a été recalculé avec le détecteur propre (D16) ; la première ligne l'a été le 27/10.
+
 **Choix**
-- On filtre sur la **confiance finale**, celle du détecteur × celle du classifieur, et non sur celle du détecteur seul. Le classifieur sert ainsi de **second filtre** : une boîte sur le fond ou sur un bout d'avion ne ressemble à aucun type. Résultat, mesuré avant l'incident D16 : 54 → 14 fausses alarmes, sans perdre un seul avion bien classé.
+- On filtre sur la **confiance finale**, celle du détecteur × celle du classifieur, et non sur celle du détecteur seul. Le classifieur sert ainsi de **second filtre** : une boîte sur le fond ou sur un bout d'avion ne ressemble à aucun type. Résultat, recalculé avec le détecteur propre : 43 → 16 fausses alarmes à seuil égal (0,25), sans perdre un seul avion bien classé.
 - **Seuil de 0,5** : choisi parce qu'il avait la meilleure F1 (à égalité avec 0,4) avec le moins de faux positifs. Recalculé avec le détecteur propre (D16), 0,4 donne une F1 un peu meilleure (0,990 contre 0,984). Mais 0,5 reste le seuil **figé avant le test**, qui donne 4 fausses alarmes et 1 mauvais type pour 787 avions. Le témoin, au même seuil, fait 19 fausses alarmes et 15 mauvais types.
 - **Deux niveaux dans l'application** (humain dans la boucle) :
   - les avions **sûrs** ont une confiance finale ≥ 0,5. C'est le résultat automatique, celui qu'on évalue ;
@@ -458,7 +458,7 @@ On trouve **741 avions sûrs et 61 à vérifier**.
 
 **Vérification :** en relisant les XML eux-mêmes et en les comparant à la vérité, on retrouve exactement les scores de l'évaluation finale (729 bon type, 9 mauvais, 3 fausses alarmes, 50 manqués).
 
-Les images (68 Mo) sont sur le Drive, d'où le lien partagé dans le rapport, mais pas dans Git.
+Mise à jour (27/10) : le corpus est dans Git (XML, aperçus, `detections.csv`, `LISEZMOI.md`), et le lien du rapport pointe vers `reports/corpus_test_annote/` sur GitHub. Seules les images d'origine (44 Mo), qui sont celles du dataset fourni, n'y sont pas.
 
 ---
 
@@ -535,8 +535,8 @@ Les images de test ont servi une seule fois à l'évaluation finale (D15). Les r
 - La disposition de D18 donnait une impression d'éparpillement : les scores globaux étaient mélangés aux résultats de l'image, la colonne de gauche empilait six éléments, et la légende et les tableaux étaient loin de l'image.
 
 **Choix** (`src/avions/app.py`, `src/avions/visualization.py`)
-- **Plus de niveau « à vérifier » dans l'interface.** Le modèle répond seulement là où sa confiance finale atteint 0,5. C'est exactement la règle de nos scores officiels : additionnés sur les 131 images, les bilans par image redonnent 729 justes, 9 mauvais types, 3 « pas un avion » et 50 oubliés (vérifié image par image).
-- **Correction binaire** : chaque réponse est **juste** (vert) ou **fausse** (rouge, avec la raison : « A19, vrai : A1 » ou « pas un avion ») ; chaque vrai avion sans réponse est **oublié** (rouge pointillé).
+- **Plus de niveau « à vérifier » dans l'interface.** Le modèle répond seulement là où sa confiance finale atteint 0,5. C'est exactement la règle de nos scores officiels : additionnés sur les 131 images, les bilans par image redonnent 729 justes, 9 mauvais types, 3 fausses alarmes et 50 oubliés (vérifié image par image).
+- **Correction binaire** : chaque réponse est **juste** (vert) ou **fausse** (rouge, avec la raison : « A19, vrai : A1 », ou une boîte sans avion annoté, précisée en D21) ; chaque vrai avion sans réponse est **oublié** (rouge pointillé).
 - **Trois colonnes, lues de gauche à droite** :
   1. choisir (exemples, hasard, galerie) ;
   2. l'image en grand, sur fond sombre ;
@@ -548,7 +548,7 @@ Les images de test ont servi une seule fois à l'évaluation finale (D15). Les r
   - 883 : sans faute ;
   - 3803 : A1 ou A19 ? ;
   - 3256 : 5 A13 pris pour des A15 ;
-  - 3734 : 2 « pas un avion » ;
+  - 3734 : 2 fausses alarmes (des doublons, voir D21) ;
   - 3607 : 50 avions serrés.
 - **Dessin lisible** : étiquettes en pastille (Pillow), qui gèrent les accents, ✓ et ✗. Au-delà de 30 boîtes, les réponses justes n'ont pas d'étiquette.
 - **Le F1 en direct**, en haut à droite.
@@ -587,3 +587,33 @@ Le niveau « à vérifier » reste dans le pipeline et dans le corpus annoté (D
 - un classifieur plus gros.
 
 Ces réglages devraient être choisis sur la validation, jamais sur le test : aucun seuil n'a été recalculé sur le test pour cette analyse.
+
+## D21 : une interface simple à expliquer, et les « doublons » (27/10/2026)
+
+**Contexte :** il faudra expliquer le code à l'oral. L'interface de D19 faisait 745 lignes, dont environ 150 de CSS, du JavaScript (thème clair forcé, défilement de la galerie) et des fonctions qui ne servent pas la démonstration.
+
+**Ce qu'on a gardé :** la galerie des 131 images de test et « Image au hasard », l'image en grand, « Détecter » puis « Corriger » en oui / non, le curseur du seuil et le F1 cumulé. L'interface s'ouvre sur un seul exemple, l'image 3803 (des A1 pris pour des A19).
+
+**Ce qu'on a retiré :**
+- l'onglet des scores globaux, dont les chiffres sont dans le README et le guide ;
+- le tableau « détail boîte par boîte » ;
+- les cinq boutons d'exemples ;
+- le CSS personnalisé, le JavaScript et les boutons qui changeaient de couleur.
+
+Les textes sont écrits en Markdown. Après une relecture indépendante du code :
+- il ne reste que **deux états** : l'image choisie et les comptes du F1 cumulé ;
+- « Corriger » refait toujours la détection (0,2 s), donc la correction est toujours à jour avec le curseur. Après avoir changé le seuil, on reclique sur un bouton ;
+- le dessin est fait par deux fonctions courtes, `dessiner_reponses` et `dessiner_correction` ;
+- le lanceur `scripts/app.py` tient en 3 lignes. Pour Docker, il suffira de définir `GRADIO_SERVER_NAME=0.0.0.0`.
+
+`src/avions/app.py` passe de 745 à 261 lignes. La même relecture a retiré du code mort ailleurs :
+- le paramètre `colors` de `draw_boxes` ;
+- les paramètres `scale` et `size` de `make_crop`, jamais changés ;
+- `src/avions/drive.py`, rangé dans le seul script qui s'en sert (`scripts/sync_drive.py`) ;
+- la fonction du témoin YOLO, déplacée dans `scripts/evaluate_systems.py`, pour que `pipeline.py` ne contienne que notre système.
+
+**Erreur corrigée : les « doublons ».** Sur l'image 3734, deux boîtes étaient marquées « pas un avion », alors qu'elles sont bien sur des avions. Le détecteur avait mis **deux boîtes sur un même avion**, deux fois. Ces boîtes se recouvrent à 67 et 69 %, sous le seuil de 70 % de la NMS, donc elles n'ont pas été supprimées. Un avion ne peut être trouvé qu'une fois : la deuxième boîte compte comme une fausse alarme, et c'est juste pour le score. Mais l'étiquette était trompeuse. La correction affiche maintenant « doublon » quand une réponse fausse recouvre un vrai avion à au moins 50 %, et sinon « aucun avion annoté », car on ne peut pas affirmer qu'il n'y a pas d'avion.
+
+**Une erreur d'annotation.** La 3e fausse alarme du test (image 3607, une boîte A9 sur le bord gauche) est en réalité **un vrai A9, coupé par le bord de l'image, que MAR20 n'a pas annoté**. On l'a vérifié en agrandissant l'image. Elle compte quand même comme fausse, car on note par rapport à la vérité du dataset.
+
+**Conséquence pour l'oral :** sur les 3 fausses alarmes du test, **2 sont des doublons** (image 3734) et la 3e est **un avion oublié par les annotateurs** : **aucune boîte n'est posée sur le fond**. Baisser le seuil de la NMS pourrait supprimer les doublons, mais il faudrait le choisir sur la validation, pas sur le test. Autre leçon : la « vérité » d'un dataset annoté à la main peut elle-même contenir des erreurs.

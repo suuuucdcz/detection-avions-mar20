@@ -31,7 +31,8 @@ NMS_IOU = 0.7  # deux boîtes qui se recouvrent à plus de 70 % : on ne garde qu
 DEFAULT_MIN_SCORE = 0.5
 # Avions « à vérifier » (humain dans la boucle, D14) : le détecteur est sûr que c'est un avion
 # (>= 0,6), mais la confiance finale reste sous le seuil, le plus souvent parce que le type est
-# incertain. On les montre à part au lieu de les cacher.
+# incertain. Ils sont gardés à part dans le corpus annoté (scripts/annotate_corpus.py) ;
+# l'interface, elle, ne les affiche pas.
 REVIEW_MIN_DETECTOR = 0.6
 
 
@@ -127,20 +128,3 @@ class AircraftPipeline:
                 )
             )
         return detections
-
-
-def predict_baseline_yolo(model: YOLO, image_bgr: np.ndarray, min_confidence: float, device: str):
-    """Le témoin (YOLO à 20 classes) : boîtes, numéros de classe et confiances, en un seul passage."""
-    result = model.predict(
-        image_bgr,
-        imgsz=DETECTOR_IMGSZ,
-        conf=min_confidence,
-        iou=NMS_IOU,
-        device=device,
-        verbose=False,
-    )[0]
-    return (
-        result.boxes.xyxy.cpu().numpy(),
-        result.boxes.cls.cpu().numpy().astype(int),
-        result.boxes.conf.cpu().numpy(),
-    )

@@ -16,7 +16,7 @@ un détecteur YOLO11n (« où sont les avions ? »), puis un classifieur ResNet-
 | Dossier ou fichier | Contenu |
 |---|---|
 | `annotations/` | un fichier XML par image, au format Pascal VOC (même format que le dataset) |
-| `images/` | les images d'origine |
+| `images/` | les images d'origine (pas dans Git : ce sont celles du dataset fourni) |
 | `apercus/` | les images avec les boîtes : épaisses pour les avions sûrs, fines avec « ? » pour les avions à vérifier |
 | `detections.csv` | toutes les détections : image, type, confiances, boîte, statut |
 
@@ -34,7 +34,7 @@ Dans les fichiers XML, chaque `<object>` contient :
 ## Scores sur ce corpus (comparaison avec la vérité terrain)
 
 Ces images forment le **jeu de test** : elles n'ont jamais servi ni à entraîner, ni à
-régler le modèle. Elles ont été évaluées une seule fois, à la fin du projet.
+régler le modèle : tous les réglages ont été figés sur la validation avant de les regarder.
 
 | Mesure | Valeur |
 |---|---|

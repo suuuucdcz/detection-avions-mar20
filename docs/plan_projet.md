@@ -69,7 +69,7 @@ Une démo qui marche vaut mieux que dix idées à moitié finies.
 - [x] Convertir les annotations au format attendu par YOLO (`uv run python scripts/prepare_yolo.py`).
 - [x] Entraîner **YOLO11n à 1 classe** « avion » **sur Google Colab** (`notebooks/colab_entrainement.ipynb`) : 30 min, arrêt automatique à l'epoch 67. Le premier essai sur le PC, coupé par deux écrans bleus, a été abandonné (voir D9 et D10).
 - [x] Évaluer le détecteur **sur la validation** : précision 0,987, rappel 0,997, mAP@0.5 0,993.
-- [ ] Regarder les avions manqués et les fausses alarmes.
+- [x] Regarder les avions manqués et les fausses alarmes (D20, D21).
 - [x] Entraîner **YOLO11n à 20 classes**, le témoin end-to-end : mAP@0.5 de 0,986 en validation.
 
 **Livrable :** des images satellites sur lesquelles tous les avions sont encadrés. C'est une première démo visuelle.
@@ -78,10 +78,10 @@ Une démo qui marche vaut mieux que dix idées à moitié finies.
 - [x] Générer les **vignettes** : un carré autour de chaque avion, avec de la marge (`scripts/make_crops.py`, D11).
 - [x] Baseline : **forêt aléatoire** sur des caractéristiques simples, HOG et taille : macro-F1 de 0,614 en validation (D12).
 - [x] **ResNet-18** en transfer learning sur les vignettes, entraîné sur Colab (`notebooks/colab_classification.ipynb`) : macro-F1 de **0,996** en validation, soit 3 erreurs sur 787 (D12).
-- [ ] Évaluation **sur la validation** : macro-F1 et matrice de confusion. On l'évalue aussi sur les vignettes découpées **par notre détecteur**, qui sont moins bien cadrées que celles des annotations.
+- [x] Évaluation **sur la validation** : macro-F1 et matrice de confusion. On l'évalue aussi sur les vignettes découpées **par notre détecteur**, qui sont moins bien cadrées que celles des annotations.
 - [x] Script `predict` : image → détection → vignettes → classification → image annotée (`scripts/predict.py`).
 - [x] Comparaison avec le témoin sur la validation (`scripts/evaluate_systems.py`, D13) : mAP50 de 0,990 pour nos deux étages contre 0,968 pour le témoin.
-- [ ] S'il reste du temps (sinon en séance 4) :
+- [x] S'il reste du temps (sinon en séance 4) :
   - **petit CNN maison**, entraîné de zéro, avec ses courbes d'apprentissage pour observer l'overfitting ;
   - **ResNet-18 sans pré-entraînement**, pour mesurer ce qu'apporte le transfer learning.
 
@@ -89,18 +89,18 @@ Une démo qui marche vaut mieux que dix idées à moitié finies.
 
 ### Séance 4 : intégration complète et comparaisons (étape 5)
 - [x] Interface **Gradio** : on choisit une des 131 images de test (jamais vues), le modèle répond, puis on corrige chaque réponse en oui / non face à la vérité (`scripts/app.py`, D17, D18, D19).
-- [ ] Comparaisons restantes : petit CNN, ResNet-18 sans pré-entraînement, notre système contre le témoin.
-- [ ] Analyse des erreurs : classes confondues, avions manqués. Choix des seuils de confiance.
+- [x] Comparaisons restantes : petit CNN, ResNet-18 sans pré-entraînement, notre système contre le témoin.
+- [x] Analyse des erreurs : classes confondues, avions manqués. Choix des seuils de confiance.
 - [x] Évaluation **unique** sur le jeu de test (D15) : mAP50 de 0,957 et F1 de 0,954 pour notre système, contre 0,940 et 0,912 pour le témoin.
-- [ ] README à jour, code propre et testé.
+- [x] README à jour, code propre et testé.
 
 **Livrable :** la version 1.0. On n'ajoute plus de fonctionnalités après.
 
 ### Séance 5 : déploiement et livraison (étape 6)
 - [ ] **Docker** : image CPU qui lance l'interface ou annote un dossier d'images. Docker Desktop est à installer chez soi avant cette séance (droits administrateur, WSL2).
 - [x] Annoter **notre jeu de test** (131 images jamais vues) avec le modèle final (`scripts/annotate_corpus.py`, `reports/corpus_test_annote/`). C'est le « corpus de test annoté » demandé dans le rapport.
-- [ ] Partager le dossier `projet_avions/reports/corpus_test_annote` du Drive par lien, et mettre ce lien dans le rapport.
-- [ ] Rapport : architecture, choix, résultats. Il s'écrit en grande partie au fil de l'eau grâce au [journal des décisions](journal_decisions.md).
+- [x] Corpus annoté versionné dans Git ; le rapport donne le lien GitHub de `reports/corpus_test_annote/`.
+- [x] Rapport (`docs/rapport.md` et `.pdf`) : architecture, choix, résultats. Il s'écrit en grande partie au fil de l'eau grâce au [journal des décisions](journal_decisions.md).
 - [ ] Slides : des schémas plutôt que du code, dans l'ordre des 6 étapes.
 - [ ] Vidéo de secours de la démo.
 - [ ] Deux répétitions chronométrées (10 min), avec un temps de parole équilibré.

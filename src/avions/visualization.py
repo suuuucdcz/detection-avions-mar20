@@ -33,15 +33,14 @@ def draw_boxes(
     boxes: list[tuple[int, int, int, int]],
     labels: list[str],
     thickness: int = 2,
-    colors: list[tuple[int, int, int]] | None = None,
 ) -> np.ndarray:
     """Dessine des boîtes (xmin, ymin, xmax, ymax) et leur étiquette sur une COPIE de l'image RGB.
 
-    Sans `colors`, chaque étiquette doit commencer par un nom de classe (ex. "A10 0.93") : il
-    sert à choisir la couleur de la boîte. Avec `colors`, chaque boîte prend la couleur donnée.
+    Chaque étiquette doit commencer par un nom de classe (ex. "A10 0.93") : il sert à choisir
+    la couleur de la boîte.
     """
     image = image.copy()  # on ne modifie pas l'image d'origine
-    colors = colors or [class_color(label.split()[0]) for label in labels]
+    colors = [class_color(label.split()[0]) for label in labels]
     for (xmin, ymin, xmax, ymax), label, color in zip(boxes, labels, colors, strict=True):
         cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color, thickness)
         cv2.putText(
@@ -74,7 +73,6 @@ class TaggedBox:
     color: tuple[int, int, int]  # RGB
     label: str = ""  # vide : pas d'étiquette
     dashed: bool = False  # pointillés (avion oublié par le modèle)
-    hollow_label: bool = False  # étiquette sur fond blanc, texte de la couleur de la boîte
 
 
 def _dashed_line(draw, start, end, color, width, dash=10, gap=6):
@@ -109,9 +107,6 @@ def draw_tagged_boxes(image: np.ndarray, boxes: list[TaggedBox], font_size: int 
         tag_w, tag_h = right - left + 10, bottom - top + 6
         tx = max(0, min(x0, width - tag_w))  # recalée si elle sort à droite
         ty = y0 - tag_h - 2 if y0 - tag_h - 2 >= 0 else y0 + 3  # au-dessus, sinon dans la boîte
-        background, ink = (WHITE, b.color) if b.hollow_label else (b.color, WHITE)
-        draw.rounded_rectangle(
-            [tx, ty, tx + tag_w, ty + tag_h], radius=4, fill=background, outline=b.color, width=2
-        )
-        draw.text((tx + 5 - left, ty + 3 - top), b.label, font=font, fill=ink)
+        draw.rounded_rectangle([tx, ty, tx + tag_w, ty + tag_h], radius=4, fill=b.color)
+        draw.text((tx + 5 - left, ty + 3 - top), b.label, font=font, fill=WHITE)
     return np.asarray(picture)

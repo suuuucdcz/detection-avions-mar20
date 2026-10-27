@@ -31,7 +31,25 @@ from ultralytics import YOLO
 from avions.constants import CLASS_TO_INDEX, MODELS_DIR, RAW_IMAGES_DIR, RUNS_DIR, SPLITS_FILE
 from avions.data.voc import load_annotations
 from avions.evaluation import DetectionEvaluator, count_outcomes
-from avions.pipeline import DEFAULT_MIN_SCORE, AircraftPipeline, predict_baseline_yolo
+from avions.pipeline import DEFAULT_MIN_SCORE, DETECTOR_IMGSZ, NMS_IOU, AircraftPipeline
+
+
+def predict_baseline_yolo(model: YOLO, image_bgr, min_confidence: float):
+    """Le témoin (YOLO à 20 classes) : boîtes, numéros de classe et confiances, en un seul passage."""
+    result = model.predict(
+        image_bgr,
+        imgsz=DETECTOR_IMGSZ,
+        conf=min_confidence,
+        iou=NMS_IOU,
+        device="cpu",
+        verbose=False,
+    )[0]
+    return (
+        result.boxes.xyxy.cpu().numpy(),
+        result.boxes.cls.cpu().numpy().astype(int),
+        result.boxes.conf.cpu().numpy(),
+    )
+
 
 # Confiance minimale très basse pour l'évaluation : la mAP a besoin de toute la courbe
 # précision-rappel, y compris les prédictions peu sûres (l'application, elle, utilise 0,5).
@@ -79,15 +97,13 @@ def main():
         seconds["deux_etages"] += time.perf_counter() - start
 
         # Le témoin, mesuré exactement de la même façon
-        boxes, classes, scores = predict_baseline_yolo(
-            baseline, image, EVAL_MIN_CONFIDENCE, device="cpu"
-        )
+        boxes, classes, scores = predict_baseline_yolo(baseline, image, EVAL_MIN_CONFIDENCE)
         evaluators["temoin_yolo20"].add_image(true_boxes, true_classes, boxes, classes, scores)
         outcomes["temoin_yolo20"].update(
             count_outcomes(true_boxes, true_classes, boxes, classes, scores, DEFAULT_MIN_SCORE)
         )
         start = time.perf_counter()
-        predict_baseline_yolo(baseline, image, DEFAULT_MIN_SCORE, device="cpu")
+        predict_baseline_yolo(baseline, image, DEFAULT_MIN_SCORE)
         seconds["temoin_yolo20"] += time.perf_counter() - start
 
     n_images = objects["image_id"].nunique()

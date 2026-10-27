@@ -86,7 +86,7 @@ def count_outcomes(
 
 
 def match_details(true_boxes, true_classes, pred_boxes, pred_classes, pred_scores):
-    """Le verdict de CHAQUE prédiction face à la vérité (utilisé par l'interface « Vérifier »).
+    """Le verdict de CHAQUE prédiction face à la vérité (utilisé par corriger() dans l'interface).
 
     Les prédictions sont prises de la plus sûre à la moins sûre ; chacune est associée à l'avion
     encore libre qu'elle recouvre le mieux (IoU >= 0,5) :
