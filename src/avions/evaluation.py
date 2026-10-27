@@ -67,7 +67,7 @@ def match_predictions(
 def count_outcomes(
     true_boxes, true_classes, pred_boxes, pred_classes, pred_scores, min_score: float
 ) -> dict:
-    """Décompte lisible à un seuil de confiance donné (celui de l'application), voir match_details."""
+    """Décompte lisible à un seuil de confiance (celui de l'application), voir match_details."""
     pred_scores = np.asarray(pred_scores, float)
     keep = pred_scores >= min_score
     statuses, _, missed = match_details(

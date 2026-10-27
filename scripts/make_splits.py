@@ -1,4 +1,4 @@
-"""Découpe les images en train / validation / test (80 / 10 / 10) et enregistre data/splits/splits.csv.
+"""Découpe les images en train / validation / test (80/10/10) et enregistre data/splits/splits.csv.
 
 Lancer depuis la racine du projet :  uv run python scripts/make_splits.py
 
@@ -20,13 +20,15 @@ def main():
     groups = near_duplicate_groups(image_ids)
     group_sizes = groups.value_counts()
     print(
-        f"  {(group_sizes > 1).sum()} groupes de quasi-doublons (au plus {group_sizes.max()} images)"
+        f"  {(group_sizes > 1).sum()} groupes de quasi-doublons"
+        f" (au plus {group_sizes.max()} images)"
     )
 
     print("Découpage (50 graines essayées, on garde la meilleure)...")
     split, seed, score = best_split(objects, groups)
     print(
-        f"  graine retenue : {seed} | plus grand écart à 10 % pour une classe : {100 * score:.1f} points"
+        f"  graine retenue : {seed} | plus grand écart à 10 % pour une classe :"
+        f" {100 * score:.1f} points"
     )
 
     SPLITS_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -39,7 +41,8 @@ def main():
     print("\nImages et avions par jeu :")
     for name in SPLIT_NAMES:
         print(
-            f"  {name:5s} : {(split == name).sum():4d} images ({100 * (split == name).mean():.0f} %)"
+            f"  {name:5s} : {(split == name).sum():4d} images"
+            f" ({100 * (split == name).mean():.0f} %)"
             f" | {n_objects[name].sum():4d} avions"
         )
     print("\nAvions par classe et par jeu (entre parenthèses : nombre d'images) :")

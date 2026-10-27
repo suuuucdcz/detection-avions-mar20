@@ -18,7 +18,7 @@ from avions.constants import CLASSES
 
 
 class SmallCNN(nn.Module):
-    """4 blocs convolution -> normalisation -> ReLU -> réduction de taille, puis une couche finale."""
+    """4 blocs (convolution, normalisation, ReLU, réduction de taille), puis une couche finale."""
 
     def __init__(self, num_classes: int = len(CLASSES)):
         super().__init__()

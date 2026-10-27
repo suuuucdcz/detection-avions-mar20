@@ -41,7 +41,7 @@ def voc_to_yolo_lines(boxes: pd.DataFrame) -> list[str]:
 
 
 def link_or_copy(source: Path, destination: Path) -> None:
-    """Crée un « lien dur » vers l'image (pas de place disque en plus), ou la copie si impossible."""
+    """Crée un « lien dur » vers l'image (aucune place disque en plus), sinon la copie."""
     try:
         os.link(source, destination)
     except OSError:

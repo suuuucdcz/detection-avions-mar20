@@ -35,7 +35,7 @@ from avions.pipeline import DEFAULT_MIN_SCORE, DETECTOR_IMGSZ, NMS_IOU, Aircraft
 
 
 def predict_baseline_yolo(model: YOLO, image_bgr, min_confidence: float):
-    """Le témoin (YOLO à 20 classes) : boîtes, numéros de classe et confiances, en un seul passage."""
+    """Le témoin (YOLO à 20 classes) : boîtes, numéros de classe et confiances, en un passage."""
     result = model.predict(
         image_bgr,
         imgsz=DETECTOR_IMGSZ,

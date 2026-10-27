@@ -61,7 +61,7 @@ def load_annotations(annotations_dir: Path = RAW_ANNOTATIONS_DIR) -> pd.DataFram
     df["box_height"] = df["ymax"] - df["ymin"]
     df["box_area"] = df["box_width"] * df["box_height"]
     df["aspect_ratio"] = df["box_width"] / df["box_height"]  # > 1 : boîte plus large que haute
-    # Centre de la boîte, en proportion de la taille de l'image (0 = bord gauche/haut, 1 = droit/bas)
+    # Centre de la boîte, en proportion de l'image (0 = bord gauche/haut, 1 = bord droit/bas)
     df["center_x"] = (df["xmin"] + df["xmax"]) / 2 / df["image_width"]
     df["center_y"] = (df["ymin"] + df["ymax"]) / 2 / df["image_height"]
     return df

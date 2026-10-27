@@ -23,7 +23,7 @@ WHITE = (255, 255, 255)
 
 
 def class_color(class_name: str) -> tuple[int, int, int]:
-    """Couleur RGB (0-255) fixe pour chaque classe, prise dans la palette « tab20 » (20 couleurs)."""
+    """Couleur RGB (0-255) fixe pour chaque classe, tirée de la palette « tab20 » (20 couleurs)."""
     r, g, b, _ = plt.get_cmap("tab20")(CLASS_TO_INDEX[class_name])
     return int(r * 255), int(g * 255), int(b * 255)
 

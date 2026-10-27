@@ -1,4 +1,4 @@
-"""Retire des notebooks les informations personnelles avant de les publier, sans toucher aux résultats.
+"""Retire des notebooks les informations personnelles, sans toucher aux résultats.
 
 Lancer depuis la racine du projet (avant chaque commit, après un passage par Colab) :
     uv run python scripts/nettoyer_notebooks.py

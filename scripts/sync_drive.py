@@ -59,7 +59,7 @@ MTIME_TOLERANCE = 2  # secondes : le Drive arrondit parfois les dates de modific
 
 
 def list_files(root: Path) -> dict[str, Path]:
-    """Tous les fichiers à synchroniser sous root, indexés par leur chemin relatif (ex. 'src/a.py')."""
+    """Les fichiers à synchroniser sous root, indexés par chemin relatif (ex. 'src/a.py')."""
     files = {}
     for path in root.rglob("*"):
         relative = path.relative_to(root).as_posix()

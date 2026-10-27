@@ -179,7 +179,8 @@ def main():
             }
         )
         print(
-            f"epoch {epoch:3d} | loss entraînement {train_loss:.3f} | loss validation {val_loss:.3f}"
+            f"epoch {epoch:3d} | loss entraînement {train_loss:.3f}"
+            f" | loss validation {val_loss:.3f}"
             f" | accuracy {val_scores['accuracy']:.3f} | macro-F1 {val_scores['macro_f1']:.3f}"
         )
         pd.DataFrame(history).to_csv(out_dir / "results.csv", index=False)

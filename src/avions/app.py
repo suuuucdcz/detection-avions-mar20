@@ -1,4 +1,4 @@
-"""Interface de démonstration : tester le modèle sur les images de TEST, jamais vues à l'entraînement.
+"""Démonstration : tester le modèle sur les images de TEST, jamais vues pendant l'entraînement.
 
 Lancer depuis la racine du projet :  uv run python scripts/app.py
 
@@ -75,7 +75,8 @@ class Correction:
 
 def corriger(verite_image: pd.DataFrame, detections: list[Detection]) -> Correction:
     """Compare les réponses aux vraies annotations, avec la même règle que nos scores officiels :
-    une réponse est juste si sa boîte recouvre un vrai avion encore libre (IoU ≥ 0,5) avec le bon type.
+    une réponse est juste si sa boîte recouvre un vrai avion encore libre (IoU ≥ 0,5)
+    avec le bon type.
     """
     boites = verite_image[["xmin", "ymin", "xmax", "ymax"]].to_numpy(float)
     types = [str(c) for c in verite_image["class_name"]]

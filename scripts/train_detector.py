@@ -6,7 +6,7 @@ Lancer depuis la racine du projet :
 On peut remplacer un paramètre sans modifier le fichier, par exemple si la mémoire GPU sature :
     uv run python scripts/train_detector.py configs/detecteur_1classe.yaml batch=8
 
-Si l'entraînement a été interrompu (crash, coupure de courant), on le reprend là où il s'était arrêté :
+Si l'entraînement a été coupé (crash, panne de courant), on le reprend là où il s'était arrêté :
     uv run python scripts/train_detector.py configs/detecteur_1classe.yaml --resume batch=8
 
 Résultats :
@@ -69,7 +69,8 @@ def main():
         model.train(
             data=str(YOLO_DATASET_YAML),
             project=str(config.pop("project", RUNS_DIR)),
-            exist_ok=True,  # relancer avec le même nom remplace le dossier au lieu d'en créer un nouveau
+            # relancer avec le même nom remplace le dossier au lieu d'en créer un nouveau
+            exist_ok=True,
             **config,
         )
 
