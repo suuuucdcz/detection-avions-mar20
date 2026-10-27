@@ -97,7 +97,7 @@ La page s'ouvre dans le navigateur (http://127.0.0.1:7860). Comme le demande le 
 2. **🔍 Détecter les avions** : le modèle répond par des boîtes bleues, là où sa confiance finale atteint 0,5, comme pour nos scores officiels.
 3. **✅ Corriger avec la vérité** : c'est **oui ou non**. Chaque réponse devient 🟩 **juste** ou 🟥 **fausse** (la raison est écrite : « A19, vrai : A1 », « pas un avion »), et chaque vrai avion sans réponse est **oublié** (rouge pointillé). Le bilan de l'image sert de légende ; le détail est dans « Détail boîte par boîte ».
 
-Additionnés sur les 131 images, ces bilans redonnent exactement les scores officiels, présentés dans le second onglet, « Scores sur tout le test ». Le seuil de confiance se règle dans « ⚙ Seuil de confiance ». Pour l'oral sur un projecteur 1366 × 768, passer le navigateur en plein écran (F11).
+En haut à droite, le **F1 cumulé** additionne les avions de toutes les images corrigées depuis l'ouverture de la page (en petit : le F1 de l'image en cours). Après les 131 images, il vaut exactement 0,954. Additionnés sur les 131 images, les bilans redonnent exactement les scores officiels, présentés dans le second onglet, « Scores sur tout le test ». Le seuil de confiance se règle dans « ⚙ Seuil de confiance ». Pour l'oral sur un projecteur 1366 × 768, passer le navigateur en plein écran (F11).
 
 Pour une seule image en ligne de commande : `uv run python scripts/predict.py data/raw/images/1453.jpg`.
 

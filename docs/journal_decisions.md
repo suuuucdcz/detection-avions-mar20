@@ -551,8 +551,39 @@ Les images de test ont servi une seule fois à l'évaluation finale (D15). Les r
   - 3734 : 2 « pas un avion » ;
   - 3607 : 50 avions serrés.
 - **Dessin lisible** : étiquettes en pastille (Pillow), qui gèrent les accents, ✓ et ✗. Au-delà de 30 boîtes, les réponses justes n'ont pas d'étiquette.
+- **Le F1 en direct**, en haut à droite.
+  - En grand, le **F1 cumulé**. On additionne les avions de toutes les images corrigées depuis l'ouverture de la page, au seuil officiel, et chaque image ne compte qu'une fois. On calcule ensuite F1 = 2 × justes / (réponses + vrais avions). Après les 131 images, on retombe exactement sur 0,954.
+  - En petit, le F1 de l'image en cours. Il n'est qu'indicatif : avec peu d'avions, une seule erreur le fait beaucoup varier.
+  - Les couleurs : vert à partir de 0,9, orange à partir de 0,6, rouge en dessous.
+  - Sur le test, 106 images sur 131 ont un F1 de 1.
+  - La **moyenne** des F1 par image (0,937) n'est pas le F1 officiel (0,954). Le F1 officiel additionne d'abord les avions de toutes les images : une image de 50 avions y pèse plus qu'une image de 2.
 - Testé à 1536 × 864 et 1366 × 768 : tout tient sur un écran, sans faire défiler.
 
 **Méthode :** trois propositions de disposition indépendantes, chacune avec son angle (l'oral, un utilisateur débutant, le rendu visuel), puis un jury qui les a notées et fusionnées.
 
 Le niveau « à vérifier » reste dans le pipeline et dans le corpus annoté (D14, D15).
+
+## D20 : on garde YOLO11n, car les avions oubliés viennent du classifieur (27/10/2026)
+
+**Question :** un détecteur plus gros (YOLO11s ou YOLO11m) améliorerait-il le F1 sur les images difficiles ?
+
+**Analyse** des 50 avions oubliés du test, au seuil officiel. On a regardé, pour chacun, si le détecteur avait une boîte dessus (avec une IoU d'au moins 0,5), en descendant sa confiance jusqu'à 0,05.
+
+| Ce qui s'est passé | Avions |
+|---|---|
+| Le détecteur l'a trouvé (confiance d'au moins 0,5), mais le classifieur hésitait sur le type | 47 |
+| Le détecteur l'a trouvé, avec une confiance inférieure à 0,5 | 2 |
+| Le détecteur ne l'a pas vu du tout | 1 |
+
+- Sur ces avions, la confiance du détecteur est de 0,83 en médiane, celle du classifieur de 0,46. Le produit (0,83 × 0,46 ≈ 0,38) passe sous 0,5.
+- Pour 29 des 47 avions, le classifieur avait pourtant deviné le bon type, mais sans être assez sûr.
+- Les types les plus touchés sont A16 (19 oubliés), A1 (13) et A5 (7).
+
+**Décision :** on garde YOLO11n. Un détecteur plus gros ne récupérerait que 1 à 3 avions sur 788, demanderait un nouvel entraînement et rendrait l'application 2 à 3 fois plus lente.
+
+**Pistes d'amélioration, toutes côté classifieur** (non appliquées) :
+- un seuil de 0,4, qui était meilleur sur la validation ;
+- la moyenne des réponses du classifieur sur plusieurs rotations de la vignette ;
+- un classifieur plus gros.
+
+Ces réglages devraient être choisis sur la validation, jamais sur le test : aucun seuil n'a été recalculé sur le test pour cette analyse.

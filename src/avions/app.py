@@ -69,8 +69,16 @@ CSS = """
 .entete { display: flex; justify-content: space-between; align-items: center; gap: 16px;
           flex-wrap: wrap; padding: 4px 2px; }
 .entete h1 { margin: 0; font: 700 22px/1.25 var(--font); color: #0f172a; }
-.badge { font-size: 13px; padding: 4px 12px; border-radius: 999px; background: #e2e8f0;
-         color: #334155; }
+/* le F1 de l'image en cours, en direct */
+.score-image { display: flex; align-items: baseline; gap: 10px; padding: 3px 14px;
+               border-radius: 999px; background: #fff; border: 1px solid #e2e8f0; cursor: help; }
+.score-image .lib { font-size: 12px; font-weight: 700; letter-spacing: .06em;
+                    text-transform: uppercase; color: #64748b !important; }
+.score-image .val { font-size: 22px; font-weight: 700; line-height: 1.2;
+                    font-variant-numeric: tabular-nums; }
+.score-image .val.vide { color: #94a3b8; }
+.score-image .det { font-size: 13px; color: #64748b !important; }
+.orange { color: #c2410c; }
 
 /* trois colonnes : choisir | regarder | répondre puis corriger */
 .carte { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px !important;
@@ -220,6 +228,28 @@ class Correction:
         """Vrais avions de l'image = justes + mauvais types + oubliés."""
         return sum(1 for _, vrai in self.reponses if vrai) + len(self.oublies)
 
+    def comptes(self) -> tuple[int, int, int]:
+        """(justes, réponses du modèle, vrais avions) : de quoi calculer précision, rappel et F1."""
+        return len(self.justes), len(self.reponses), self.n_avions
+
+    def scores(self) -> tuple[float | None, float, float]:
+        """Précision, rappel et F1 de cette image, avec la même règle que nos scores officiels."""
+        justes, reponses, n = self.comptes()
+        precision = justes / reponses if reponses else None  # aucune réponse : pas de précision
+        return precision, justes / n, f1_score(justes, reponses, n)
+
+
+def f1_score(justes: int, reponses: int, n_avions: int) -> float:
+    """F1 = 2 × justes / (réponses + vrais avions), ce qui revient à 2PR / (P + R).
+
+    On compte des AVIONS, pas des images : c'est ainsi qu'est calculé le F1 officiel (0,954).
+    """
+    return 2 * justes / (reponses + n_avions)
+
+
+def seuil_officiel(seuil: float) -> bool:
+    return round(seuil, 2) == DEFAULT_MIN_SCORE  # le curseur peut renvoyer 0.5000000000000001
+
 
 def corriger(verite_image: pd.DataFrame, detections: list[Detection]) -> Correction:
     """Compare les réponses aux vraies annotations, avec la même règle que nos scores officiels."""
@@ -269,10 +299,39 @@ def dessiner(image_rgb, etape: str, detections, correction: Correction | None):
 # ---------- petits morceaux de HTML ----------
 
 
-def entete(n_images: int) -> str:
+def couleur_f1(f1: float) -> str:
+    return "vert" if f1 >= 0.9 else "orange" if f1 >= 0.6 else "rouge"
+
+
+def entete(cumul: dict | None = None, correction: Correction | None = None, compte=True) -> str:
+    """Le titre et, à droite, le F1 CUMULÉ (en grand) puis celui de l'image en cours (en petit).
+
+    cumul : {image : (justes, réponses, vrais avions)} pour les images corrigées au seuil officiel.
+    Le F1 cumulé additionne leurs avions, comme le F1 officiel : après les 131 images, il vaut
+    exactement 0,954.
+    """
+    if cumul:
+        justes, reponses, n = (sum(c[k] for c in cumul.values()) for k in range(3))
+        f1 = f1_score(justes, reponses, n)
+        valeur, couleur = virgule(f1, 3), couleur_f1(f1)
+        s = "s" if len(cumul) > 1 else ""
+        detail = f"sur {len(cumul)} image{s} corrigée{s}"
+    else:
+        valeur, couleur, detail = "—", "vide", "corrige des images pour le calculer"
+    if correction is not None:
+        f1_image = correction.scores()[2]
+        detail += f" · cette image : <b class='{couleur_f1(f1_image)}'>{virgule(f1_image)}</b>" + (
+            "" if compte else " (seuil modifié, non comptée)"
+        )
+    aide = (
+        "F1 cumulé : on additionne les avions de toutes les images corrigées, puis "
+        "F1 = 2 × justes / (réponses du modèle + vrais avions). Après les 131 images : 0,954. "
+        "Recharger la page remet le compteur à zéro."
+    )
     return (
         "<div class='entete'><h1>✈️ Détection d'avions sur images satellites</h1>"
-        f"<span class='badge'>{n_images} images de test · jamais vues par le modèle</span></div>"
+        f"<div class='score-image' title='{aide}'><span class='lib'>F1 cumulé</span>"
+        f"<span class='val {couleur}'>{valeur}</span><span class='det'>{detail}</span></div></div>"
     )
 
 
@@ -322,7 +381,7 @@ def resume_html(detections, duree: float = 0.0, seuil: float = DEFAULT_MIN_SCORE
         html += raison(" · ".join(f"{k} × {c}" for c, k in types.most_common()))
     else:
         html += note(f"Aucun avion trouvé avec une confiance d'au moins {virgule(seuil)}.")
-    officiel = "" if seuil == DEFAULT_MIN_SCORE else " <span class='puce'>officiel : 0,50</span>"
+    officiel = "" if seuil_officiel(seuil) else " <span class='puce'>officiel : 0,50</span>"
     return html + note(f"en {virgule(duree, 1)} s · seuil {virgule(seuil)}{officiel}")
 
 
@@ -353,7 +412,7 @@ def bilan_html(correction: Correction | None, seuil: float = DEFAULT_MIN_SCORE) 
     else:
         s = "s" if justes > 1 else ""
         html += f"<div class='resume'>{justes} avion{s} sur {n} bien reconnu{s}</div>"
-    if seuil != DEFAULT_MIN_SCORE:
+    if not seuil_officiel(seuil):
         html += note(
             f"Seuil modifié ({virgule(seuil)}) : ce bilan ne compte plus dans les scores officiels."
         )
@@ -502,15 +561,19 @@ def creer_demo(pipeline: AircraftPipeline | None = None) -> gr.Blocks:
         detections = sorted(pipeline.predict(lire_image_bgr(image_id)), key=lambda d: -d.score)
         return detections, time.perf_counter() - debut
 
-    def rendu(image_id, etape, detections=None, duree=0.0, seuil=DEFAULT_MIN_SCORE):
-        """Tout l'affichage, recalculé à partir de l'état : image, étape, réponses du modèle."""
-        correction = None
+    def rendu(image_id, etape, cumul, detections=None, duree=0.0, seuil=DEFAULT_MIN_SCORE):
+        """Tout l'affichage, recalculé à partir de l'état : image, étape, réponses du modèle,
+        et les comptes des images déjà corrigées (pour le F1 cumulé)."""
+        cumul, correction = dict(cumul), None
         if etape == "correction":
             correction = corriger(verite[verite["image_id"] == image_id], detections)
+            if seuil_officiel(seuil):  # une image ne compte qu'une fois, et au seuil officiel
+                cumul[image_id] = correction.comptes()
         table = tableau(etape, detections, correction)
         suivant = {"image": 0, "reponse": 1, "correction": 2}[etape]  # le bouton bleu
         boutons = [gr.Button(variant="primary" if k == suivant else "secondary") for k in range(3)]
         return (
+            entete(cumul, correction, seuil_officiel(seuil)),
             titre_scene(image_id, etape),
             dessiner(lire_image_rgb(image_id), etape, detections, correction),
             resume_html(detections, duree, seuil),
@@ -522,13 +585,15 @@ def creer_demo(pipeline: AircraftPipeline | None = None) -> gr.Blocks:
             etape,
             detections,
             duree,
+            cumul,
         )
 
     with gr.Blocks(title="Détection d'avions · MAR20", fill_width=True) as demo:
         etat_image, etat_etape = gr.State(ordre[0]), gr.State("image")
         etat_detections, etat_duree = gr.State(None), gr.State(0.0)
+        etat_cumul = gr.State({})  # propre à chaque onglet du navigateur
         with gr.Column(elem_id="app"):
-            gr.HTML(entete(len(ordre)))
+            en_tete = gr.HTML(entete())
             with gr.Tabs():
                 with gr.Tab("Tester une image", id="tester"), gr.Row(equal_height=True):
                     # 1. CHOISIR
@@ -544,7 +609,7 @@ def creer_demo(pipeline: AircraftPipeline | None = None) -> gr.Blocks:
                             ]
                         bouton_hasard = gr.Button("🎲 Image au hasard", size="md")
                         gr.HTML(
-                            f"<p class='sur-titre'>Toutes les images de test ({len(ordre)})</p>"
+                            f"<p class='sur-titre'>{len(ordre)} images de test · jamais vues</p>"
                         )
                         galerie = gr.Gallery(
                             value=galerie_vals,
@@ -608,6 +673,7 @@ def creer_demo(pipeline: AircraftPipeline | None = None) -> gr.Blocks:
                     gr.HTML(scores_globaux_html())
 
         sorties = [
+            en_tete,
             scene_titre,
             scene,
             resume,
@@ -621,50 +687,59 @@ def creer_demo(pipeline: AircraftPipeline | None = None) -> gr.Blocks:
             etat_etape,
             etat_detections,
             etat_duree,
+            etat_cumul,
         ]
 
-        def sur_vignette(seuil, evt: gr.SelectData):
-            return rendu(ordre[evt.index], "image", seuil=seuil)
+        def sur_vignette(seuil, cumul, evt: gr.SelectData):
+            return rendu(ordre[evt.index], "image", cumul, seuil=seuil)
 
-        def choisir(index, seuil):
-            return gr.Gallery(selected_index=index), *rendu(ordre[index], "image", seuil=seuil)
+        def choisir(index, seuil, cumul):
+            return (
+                gr.Gallery(selected_index=index),
+                *rendu(ordre[index], "image", cumul, seuil=seuil),
+            )
 
-        def au_hasard(image_id, seuil):
+        def au_hasard(image_id, seuil, cumul):
             index = random.choice([k for k, i in enumerate(ordre) if i != image_id])
-            return choisir(index, seuil)
+            return choisir(index, seuil, cumul)
 
-        def detecter(image_id, seuil):
-            return rendu(image_id, "reponse", *predire(image_id, seuil), seuil)
+        def detecter(image_id, seuil, cumul):
+            return rendu(image_id, "reponse", cumul, *predire(image_id, seuil), seuil)
 
-        def corriger_clic(image_id, detections, duree, seuil):
+        def corriger_clic(image_id, detections, duree, seuil, cumul):
             if detections is None:  # on n'a pas encore détecté : on le fait d'abord
                 detections, duree = predire(image_id, seuil)
-            return rendu(image_id, "correction", detections, duree, seuil)
+            return rendu(image_id, "correction", cumul, detections, duree, seuil)
 
-        def changer_seuil(image_id, etape, seuil):
+        def changer_seuil(image_id, etape, seuil, cumul):
             if etape == "image":  # rien n'est affiché : rien à recalculer
                 return [gr.skip()] * len(sorties)
-            return rendu(image_id, etape, *predire(image_id, seuil), seuil)
+            return rendu(image_id, etape, cumul, *predire(image_id, seuil), seuil)
 
-        galerie.select(sur_vignette, [seuil], sorties, show_progress="hidden")
+        galerie.select(sur_vignette, [seuil, etat_cumul], sorties, show_progress="hidden")
         for index, bouton in enumerate(boutons_conseil):
             bouton.click(
-                lambda s, index=index: choisir(index, s),
-                [seuil],
+                lambda s, c, index=index: choisir(index, s, c),
+                [seuil, etat_cumul],
                 [galerie, *sorties],
                 show_progress="hidden",
             ).then(None, js=DEFILER)
         bouton_hasard.click(
-            au_hasard, [etat_image, seuil], [galerie, *sorties], show_progress="hidden"
+            au_hasard, [etat_image, seuil, etat_cumul], [galerie, *sorties], show_progress="hidden"
         ).then(None, js=DEFILER)
-        bouton_detecter.click(detecter, [etat_image, seuil], sorties, show_progress="minimal")
+        bouton_detecter.click(
+            detecter, [etat_image, seuil, etat_cumul], sorties, show_progress="minimal"
+        )
         bouton_corriger.click(
             corriger_clic,
-            [etat_image, etat_detections, etat_duree, seuil],
+            [etat_image, etat_detections, etat_duree, seuil, etat_cumul],
             sorties,
             show_progress="minimal",
         )
         seuil.release(
-            changer_seuil, [etat_image, etat_etape, seuil], sorties, show_progress="minimal"
+            changer_seuil,
+            [etat_image, etat_etape, seuil, etat_cumul],
+            sorties,
+            show_progress="minimal",
         )
     return demo

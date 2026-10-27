@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 
-from avions.app import IMAGES_CONSEILLEES, charger_images_test, corriger
+from avions.app import IMAGES_CONSEILLEES, charger_images_test, corriger, entete
 from avions.constants import SPLITS_FILE
 from avions.pipeline import Detection
 from avions.visualization import TaggedBox, draw_tagged_boxes
@@ -37,6 +37,19 @@ def test_correction_oui_ou_non():
     assert [vrai for _, vrai in c.oublies] == ["A3"]  # l'A3 n'a reçu aucune réponse
     # justes + mauvais types + oubliés = tous les vrais avions de l'image
     assert c.n_avions == len(verite) == 3
+    # 1 juste sur 3 réponses (précision), 1 juste sur 3 vrais avions (rappel), donc F1 = 1/3
+    assert c.comptes() == (1, 3, 3)
+    precision, rappel, f1 = c.scores()
+    assert precision == rappel == f1 == 1 / 3
+
+
+def test_f1_cumule_compte_des_avions_pas_des_images():
+    # deux images : l'une sans faute (2 avions), l'autre ratée (1 juste sur 50 réponses et avions)
+    cumul = {"a": (2, 2, 2), "b": (1, 50, 50)}
+    # on additionne les avions : 2 × 3 / (52 + 52), pas la moyenne des deux F1 (1 et 0,02)
+    assert "0,058" in entete(cumul)
+    # avec les comptes officiels du test (729 justes, 741 réponses, 788 avions) : 0,954
+    assert "0,954" in entete({"tout": (729, 741, 788)})
 
 
 def test_dessin_ne_modifie_pas_l_image():
