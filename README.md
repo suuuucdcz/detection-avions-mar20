@@ -70,9 +70,10 @@ uv run python app.py
 ```
 
 La page s'ouvre dans le navigateur. Elle propose les **131 images de test**, que le modèle n'a jamais vues, et s'ouvre sur l'exemple ★ 3803.
-- **🔍 Détecter les avions** : le modèle répond par des boîtes bleues, là où sa confiance finale atteint le seuil (0,5 par défaut).
+- **🔍 Détecter les avions** : le modèle répond par des boîtes bleues, là où sa confiance finale atteint le seuil (0,5 par défaut). Au-dessus de chaque boîte, la pastille sombre donne cette confiance.
 - **✅ Corriger avec la vérité** : chaque réponse est 🟩 **juste** ou 🟥 **fausse**, avec la raison (« vrai : A1 », « doublon » ou « aucun avion annoté »), et chaque vrai avion sans réponse est **oublié** (rouge pointillé).
 - En haut, le **F1 cumulé** additionne les avions des images corrigées. Après les 131 images, il vaut exactement 0,954.
+- **🧪 Tester les 131 images** : la détection et la correction de toutes les images d'un coup (30 s environ), avec le bilan total. Au seuil de 0,5, on retrouve 729 justes, 12 fausses (9 mauvais types, 2 doublons, 1 avion non annoté), 50 oubliés et un F1 de 0,954.
 - Le curseur change le seuil ; il faut ensuite recliquer sur un bouton. Une image corrigée à un autre seuil que 0,5 ne compte pas dans le F1 cumulé.
 
 ## Les étapes du projet

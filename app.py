@@ -5,9 +5,11 @@ Lancer depuis la racine du projet :  uv run python app.py
 1. On choisit une des 131 images de test (aucune image extérieure au dataset).
 2. « Détecter les avions » : le modèle répond par des boîtes bleues, là où sa confiance finale
    (détecteur × classifieur) atteint le seuil, 0,5 par défaut comme pour nos scores officiels.
+   À gauche de chaque boîte : cette confiance.
 3. « Corriger avec la vérité » : c'est oui ou non. Chaque réponse est juste (vert) ou fausse
    (rouge, avec la raison), et chaque vrai avion sans réponse est oublié (rouge pointillé).
    En haut, le F1 cumulé des images corrigées : après les 131, il vaut exactement 0,954.
+4. « Tester les 131 images » : la même chose pour toutes les images d'un coup, avec le bilan total.
 
 Ce fichier est autonome : il contient toute la chaîne en deux étages, la même que dans le
 notebook etapes/5_integration.ipynb (lecture des XML, vignettes, détecteur, classifieur, correction).
@@ -316,6 +318,7 @@ class TaggedBox:
     color: tuple[int, int, int]  # RGB
     label: str = ""  # vide : pas d'étiquette
     dashed: bool = False  # pointillés (avion oublié par le modèle)
+    score: str = ""  # confiance du modèle, à gauche de l'étiquette (vide : rien)
 
 
 def _dashed_line(draw, start, end, color, width, dash=10, gap=6):
@@ -329,7 +332,8 @@ def _dashed_line(draw, start, end, color, width, dash=10, gap=6):
 
 def draw_tagged_boxes(image: np.ndarray, boxes: list[TaggedBox], font_size: int = 18) -> np.ndarray:
     """Dessine des boîtes et des étiquettes en pastille (fond de couleur, texte blanc) sur une COPIE
-    de l'image RGB. Les boîtes sont dessinées dans l'ordre : les dernières passent au-dessus.
+    de l'image RGB. Au-dessus de chaque boîte, de gauche à droite : le score (pastille sombre), puis
+    l'étiquette. Les boîtes sont dessinées dans l'ordre : les dernières passent au-dessus.
     """
     picture = Image.fromarray(image)
     draw = ImageDraw.Draw(picture)
@@ -344,14 +348,21 @@ def draw_tagged_boxes(image: np.ndarray, boxes: list[TaggedBox], font_size: int 
                 _dashed_line(draw, start, end, b.color, width=3)
         else:
             draw.rectangle([x0 + 1, y0 + 1, x1 - 1, y1 - 1], outline=b.color, width=3)
-        if not b.label:
+        pastilles = [(t, c) for t, c in ((b.score, HALO), (b.label, b.color)) if t]
+        if not pastilles:
             continue
-        left, top, right, bottom = draw.textbbox((0, 0), b.label, font=font)
-        tag_w, tag_h = right - left + 10, bottom - top + 6
-        tx = max(0, min(x0, width - tag_w))  # recalée si elle sort à droite
+        tailles = []
+        for texte, _ in pastilles:
+            left, top, right, bottom = draw.textbbox((0, 0), texte, font=font)
+            tailles.append((right - left + 10, bottom - top + 6, left, top))
+        total_w = sum(w for w, *_ in tailles) + 2 * (len(tailles) - 1)
+        tag_h = max(h for _, h, *_ in tailles)
+        tx = max(0, min(x0, width - total_w))  # recalées si elles sortent à droite
         ty = y0 - tag_h - 2 if y0 - tag_h - 2 >= 0 else y0 + 3  # au-dessus, sinon dans la boîte
-        draw.rounded_rectangle([tx, ty, tx + tag_w, ty + tag_h], radius=4, fill=b.color)
-        draw.text((tx + 5 - left, ty + 3 - top), b.label, font=font, fill=WHITE)
+        for (texte, couleur), (w, h, left, top) in zip(pastilles, tailles, strict=True):
+            draw.rounded_rectangle([tx, ty, tx + w, ty + h], radius=4, fill=couleur)
+            draw.text((tx + 5 - left, ty + 3 - top), texte, font=font, fill=WHITE)
+            tx += w + 2
     return np.asarray(picture)
 
 
@@ -434,17 +445,26 @@ def corriger(verite_image: pd.DataFrame, detections: list[Detection]) -> Correct
 
 
 def dessiner_reponses(image_rgb, detections: list[Detection]):
-    """Les réponses du modèle, en bleu."""
-    boites = [TaggedBox(d.box, BLEU, d.class_name) for d in detections]
+    """Les réponses du modèle, en bleu, avec leur confiance à gauche de chaque boîte."""
+    boites = [TaggedBox(d.box, BLEU, d.class_name, score=virgule(d.score)) for d in detections]
     return draw_tagged_boxes(image_rgb, boites, font_size=15 if len(boites) > DENSE else 18)
 
 
 def dessiner_correction(image_rgb, c: Correction):
-    """Vert : juste ; rouge : fausse ; rouge pointillé : oublié. Les erreurs passent au-dessus."""
+    """Vert : juste ; rouge : fausse ; rouge pointillé : oublié. Les erreurs passent au-dessus.
+
+    Chaque réponse garde sa confiance à gauche de sa boîte (un oublié n'en a pas).
+    """
     dense = len(c.justes) + len(c.fausses) + len(c.oublies) > DENSE
-    boites = [TaggedBox(d.box, VERT, "" if dense else f"✓ {d.class_name}") for d in c.justes]
+    boites = [
+        TaggedBox(d.box, VERT, "" if dense else f"✓ {d.class_name}", score=virgule(d.score))
+        for d in c.justes
+    ]
     boites += [TaggedBox(b, ROUGE, f"✗ oublié : {vrai}", dashed=True) for b, vrai in c.oublies]
-    boites += [TaggedBox(d.box, ROUGE, f"✗ {d.class_name} ({raison})") for d, raison in c.fausses]
+    boites += [
+        TaggedBox(d.box, ROUGE, f"✗ {d.class_name} ({raison})", score=virgule(d.score))
+        for d, raison in c.fausses
+    ]
     return draw_tagged_boxes(image_rgb, boites, font_size=15 if dense else 18)
 
 
@@ -473,6 +493,31 @@ def bilan_md(c: Correction) -> str:
         f"🟥 **Fausses : {len(c.fausses)}**{detail(fausses)}",
         f"⬚ **Oubliés (pointillés) : {len(c.oublies)}**{detail(oublies)}",
         f"→ **{len(c.justes)} avion(s) sur {c.n_avions} bien reconnu(s)**",
+    ]
+    return "  \n".join(lignes)
+
+
+def tout_md(corrections: list[Correction], seuil: float, duree: float) -> str:
+    """Le bilan de toutes les images d'un coup, en additionnant leurs avions (comme le F1 officiel)."""
+    justes = sum(len(c.justes) for c in corrections)
+    reponses = justes + sum(len(c.fausses) for c in corrections)
+    n_avions = sum(c.n_avions for c in corrections)
+    # les fausses, par raison : un mauvais type, une 2e boîte sur un avion, ou rien d'annoté
+    raisons = Counter(
+        "mauvais type" if raison.startswith("vrai") else raison
+        for c in corrections
+        for _, raison in c.fausses
+    )
+    oublies = sum(len(c.oublies) for c in corrections)
+    precision = virgule(justes / max(reponses, 1), 3)
+    rappel = virgule(justes / n_avions, 3)
+    f1 = virgule(f1_score(justes, reponses, n_avions), 3)
+    lignes = [
+        f"**{len(corrections)} images testées** au seuil {virgule(seuil)}, en {round(duree)} s",
+        f"🟩 **Justes : {justes}**",
+        f"🟥 **Fausses : {reponses - justes}**{detail(raisons)}",
+        f"⬚ **Oubliés : {oublies}** sur {n_avions} vrais avions",
+        f"Précision {precision} · rappel {rappel} · **F1 {f1}**",
     ]
     return "  \n".join(lignes)
 
@@ -536,6 +581,23 @@ def creer_demo() -> gr.Blocks:
         ligne = f1_md(cumul, correction, au_seuil_officiel)
         return image, resume, bilan_md(correction), ligne, image_id, cumul
 
+    # gr.Progress() : Gradio remplace ce paramètre par une barre de progression dans la page
+    def tester_tout(seuil, cumul, progress=gr.Progress()):  # noqa: B008
+        """Les 131 images d'un coup : détection et correction de chacune, puis le bilan total."""
+        debut = time.perf_counter()
+        au_seuil_officiel = round(seuil, 2) == DEFAULT_MIN_SCORE
+        corrections = []
+        for image_id in progress.tqdm(ordre, desc="Test des images"):
+            detections, _ = predire(image_id, seuil)
+            correction = corriger(verite[verite["image_id"] == image_id], detections)
+            corrections.append(correction)
+            if au_seuil_officiel:  # comme pour « Corriger » : seul le seuil officiel compte
+                cumul[image_id] = correction.comptes()
+        bilan_total = tout_md(corrections, seuil, time.perf_counter() - debut)
+        if not au_seuil_officiel:
+            bilan_total += "  \n(seuil modifié : le F1 cumulé, en haut, ne change pas)"
+        return bilan_total, f1_md(cumul), cumul
+
     def sur_vignette(cumul, evt: gr.SelectData):  # evt.index : la vignette cliquée
         return afficher(ordre[evt.index], cumul)
 
@@ -583,8 +645,14 @@ def creer_demo() -> gr.Blocks:
                 gr.Markdown("### 3. On corrige avec la vérité")
                 bouton_corriger = gr.Button("✅ Corriger avec la vérité", variant="primary")
                 bilan = gr.Markdown()
+                gr.Markdown(
+                    f"### 4. Toutes les images\nLes {len(ordre)} images d'un coup (30 s environ)"
+                )
+                bouton_tout = gr.Button(f"🧪 Tester les {len(ordre)} images")
+                bilan_tout = gr.Markdown()
 
         sorties = [image, resume, bilan, ligne_f1, etat_image, etat_cumul]
+        bouton_tout.click(tester_tout, [seuil, etat_cumul], [bilan_tout, ligne_f1, etat_cumul])
         galerie.select(sur_vignette, [etat_cumul], sorties)
         bouton_hasard.click(au_hasard, [etat_cumul], [galerie, *sorties])
         bouton_detecter.click(detecter, [etat_image, seuil, etat_cumul], sorties)
