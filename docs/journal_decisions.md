@@ -4,6 +4,8 @@ Chaque choix technique important est noté ici avec les options envisagées et l
 
 Format : **contexte → options → choix → pourquoi → preuve chiffrée** (à compléter quand on a les résultats).
 
+**Note :** depuis le 28/10/2026, tout le code est rangé dans `etapes/` (5 notebooks, un par étape) et dans `app.py` (l'interface), voir D22. Les chemins cités dans les décisions plus anciennes (`src/`, `scripts/`, `configs/`, `notebooks/`, `tests/`) renvoient à l'organisation d'avant, toujours visible dans l'historique Git.
+
 ---
 
 ## D1 : architecture en deux étages, avec un témoin (26/10/2026)
@@ -617,3 +619,28 @@ Les textes sont écrits en Markdown. Après une relecture indépendante du code 
 **Une erreur d'annotation.** La 3e fausse alarme du test (image 3607, une boîte A9 sur le bord gauche) est en réalité **un vrai A9, coupé par le bord de l'image, que MAR20 n'a pas annoté**. On l'a vérifié en agrandissant l'image. Elle compte quand même comme fausse, car on note par rapport à la vérité du dataset.
 
 **Conséquence pour l'oral :** sur les 3 fausses alarmes du test, **2 sont des doublons** (image 3734) et la 3e est **un avion oublié par les annotateurs** : **aucune boîte n'est posée sur le fond**. Baisser le seuil de la NMS pourrait supprimer les doublons, mais il faudrait le choisir sur la validation, pas sur le test. Autre leçon : la « vérité » d'un dataset annoté à la main peut elle-même contenir des erreurs.
+
+---
+
+## D22 : réorganisation, un notebook par étape (28/10/2026)
+
+**Contexte :** le dépôt était devenu difficile à suivre : 42 fichiers Python répartis entre `src/avions/`, `scripts/`, `tests/` et `configs/`, plus 3 notebooks. Pour le rendu et l'oral, il faut pouvoir lire le projet dans l'ordre des étapes du sujet.
+
+**Choix :**
+- **5 notebooks autonomes** dans `etapes/`, un par étape (analyse, préparation, détection, classification, intégration). Chacun contient tout son code, dans l'ordre, avec les explications et les résultats déjà affichés. Les cellules d'entraînement sont désactivées (`ENTRAINER = False`), et une partie en tête des notebooks 2, 3 et 4 explique comment tout relancer sur Colab.
+- **`app.py`**, un seul fichier à la racine, pour l'interface de la démo.
+
+**Ce qui a été retiré :**
+- `src/`, `scripts/`, `configs/` et `notebooks/`, dont le code est maintenant dans les notebooks ;
+- les 31 tests automatiques ;
+- le code, les réglages et les traces d'entraînement des modèles écartés (forêt aléatoire, petit CNN, ResNet-18 sans pré-entraînement, témoin YOLO à 20 classes). Leurs **scores sont gardés** (`runs/classifieurs_*/`, `runs/comparaison_*/`), pour justifier nos choix ;
+- `docs/architecture.md` (déjà dans le rapport), `docs/plan_projet.md` (le plan de départ) et `reports/figures/` (les figures de l'analyse sont dans le notebook 1 et dans `oral/guide_images/`).
+
+**Vérifications :**
+- les notebooks, ré-exécutés sur le processeur, redonnent exactement les résultats officiels : le découpage est identique, le détecteur fait P 0,987 / R 0,997 / mAP50 0,993 en validation, le classifieur atteint une macro-F1 de 0,996 (3 erreurs), et au seuil de 0,5 on retrouve 767 / 1 / 4 / 19 en validation ;
+- le code du corpus (notebook 5, partie 6) réécrit à l'identique les 131 XML, les aperçus et `detections.csv` ;
+- `app.py` donne les mêmes détections, les mêmes corrections et les mêmes images que l'ancienne interface, sur les 131 images de test (F1 cumulé : 0,954).
+
+**Conséquences :**
+- la chaîne en deux étages existe en deux exemplaires, le notebook 5 et `app.py`, vérifiés identiques ;
+- sans tests automatiques, ce sont ces comparaisons et la ré-exécution des notebooks qui font office de contrôle.

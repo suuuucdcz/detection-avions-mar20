@@ -3,7 +3,6 @@
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
-.pytest_cache/
 .ruff_cache/
 
 # Données : trop lourdes pour Git (425 Mo). On ne versionne que les fichiers de split.
@@ -11,7 +10,7 @@ data/*
 !data/splits/
 
 # Poids des modèles : seuls les 2 modèles finaux (50 Mo) sont dans Git, pour que la démo se lance
-# après un simple clone. Les témoins et les modèles de comparaison (90 Mo) restent sur le Drive.
+# après un simple clone (les poids de départ téléchargés, comme yolo11n.pt, n'y sont pas).
 models/*
 *.pt
 *.joblib

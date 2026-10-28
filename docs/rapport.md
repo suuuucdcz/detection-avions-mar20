@@ -52,7 +52,7 @@ Les deux réseaux partent de **poids pré-entraînés** (transfer learning, auto
 
 ## 3. L'entraînement
 
-Les entraînements ont été faits sur **Google Colab** (GPU T4), avec les mêmes scripts et les mêmes fichiers de réglages (`configs/`) que sur le PC.
+Les entraînements ont été faits sur **Google Colab** (GPU T4), Le code d'entraînement est dans les notebooks `etapes/3_detection.ipynb` et `etapes/4_classification.ipynb` : ses cellules sont désactivées par défaut, et se relancent sur Colab.
 
 - **Le détecteur** : images en 800 pixels pour ne pas rétrécir les plus petits avions (38 pixels), retournements, et early stopping (meilleure epoch : 52, arrêt à la 67e). En validation, il retrouve 99,7 % des avions (rappel de 0,997).
 - **Le classifieur** :
@@ -89,13 +89,13 @@ Le Deep Learning surpasse nettement le Machine Learning classique. Le transfer l
 
 ## 5. L'application et le corpus annoté
 
-- **L'interface** (`uv run python scripts/app.py`, bibliothèque Gradio) :
+- **L'interface** (`uv run python app.py`, bibliothèque Gradio) :
   - elle propose les 131 images de test, sans dépôt d'image extérieure ;
   - « Détecter les avions » affiche les réponses du modèle ;
   - « Corriger avec la vérité » marque chaque réponse juste ou fausse, avec la raison, et montre les avions oubliés ;
   - un **F1 cumulé** se met à jour à chaque image corrigée ; après les 131, il vaut exactement 0,954 ;
   - tout tourne sur le processeur, en environ 0,2 seconde par image.
-- **Le corpus annoté** (`scripts/annotate_corpus.py`) :
+- **Le corpus annoté** (`etapes/5_integration.ipynb`, partie 6) :
   - les fichiers XML reprennent le format du dataset fourni ;
   - chaque avion y reçoit en plus une balise `<score>` (la confiance finale) et une balise `<a_verifier>` ;
   - un avion est « à vérifier » quand le détecteur est sûr de voir un avion, mais que le type est incertain : c'est un humain qui tranche. On compte 741 avions sûrs et 61 boîtes à vérifier.

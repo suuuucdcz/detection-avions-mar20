@@ -7,14 +7,13 @@ Projet du module « Introduction à l'IA » (IPSA Toulouse). L'application **loc
 | Demandé par le sujet | Où le trouver |
 |---|---|
 | Le rapport : architecture, lien Git, lien du corpus | [docs/rapport.md](docs/rapport.md) (et [docs/rapport.pdf](docs/rapport.pdf), joint à l'e-mail) |
-| Le code du projet | ce dépôt : [`src/avions/`](src/avions/) et [`scripts/`](scripts/) |
+| Le code du projet | [etapes/](etapes/) : un notebook par étape du sujet, avec tout son code et ses résultats ; [app.py](app.py) : l'interface de la démo |
 | Le corpus de test annoté par le modèle | [reports/corpus_test_annote/](reports/corpus_test_annote/) : 131 XML, aperçus, tableau, notice |
-| Une démonstration qui fonctionne | `uv run python scripts/app.py` (voir [Lancer la démo](#lancer-la-démo)) |
+| Une démonstration qui fonctionne | `uv run python app.py` (voir [Lancer la démo](#lancer-la-démo)) |
 
 Pour comprendre et présenter le projet, tout est dans le dossier [oral/](oral/) (voir [oral/LISEZ-MOI.md](oral/LISEZ-MOI.md)) :
-- [oral/guide_projet.html](oral/guide_projet.html) : le projet étape par étape, avec les figures, les 12 notions de l'oral et le code fichier par fichier. GitHub n'affiche que son code : l'ouvrir dans un navigateur après avoir cloné ou téléchargé le dépôt (Code > Download ZIP) ;
-- [docs/architecture.md](docs/architecture.md) : l'architecture en détail ;
-- [docs/journal_decisions.md](docs/journal_decisions.md) : chaque choix et sa justification (D1 à D21) ;
+- [oral/guide_projet.html](oral/guide_projet.html) : le projet étape par étape, avec les figures, les 12 notions de l'oral et les passages de code à savoir montrer. GitHub n'affiche que son code : l'ouvrir dans un navigateur après avoir cloné ou téléchargé le dépôt (Code > Download ZIP) ;
+- [docs/journal_decisions.md](docs/journal_decisions.md) : chaque choix et sa justification (D1 à D22) ;
 - [oral/fiches_oral.md](oral/fiches_oral.md) : les fiches de révision des 12 notions ;
 - `oral/lancer_demo.bat` et `oral/ouvrir_le_code.bat` : un double-clic pour lancer la démo, ou pour ouvrir le code à montrer dans VS Code.
 
@@ -71,69 +70,46 @@ Les deux modèles finaux sont déjà dans le dépôt (`models/`).
 **3. Lancer l'interface :**
 
 ```bash
-uv run python scripts/app.py
+uv run python app.py
 ```
 
-La page s'ouvre dans le navigateur. Elle propose les **131 images de test**, que le modèle n'a jamais vues, et s'ouvre sur l'exemple ★ 3803.
+Ou double-cliquer sur `oral/lancer_demo.bat`. La page s'ouvre dans le navigateur. Elle propose les **131 images de test**, que le modèle n'a jamais vues, et s'ouvre sur l'exemple ★ 3803.
 - **🔍 Détecter les avions** : le modèle répond par des boîtes bleues, là où sa confiance finale atteint le seuil (0,5 par défaut).
 - **✅ Corriger avec la vérité** : chaque réponse est 🟩 **juste** ou 🟥 **fausse**, avec la raison (« vrai : A1 », « doublon » ou « aucun avion annoté »), et chaque vrai avion sans réponse est **oublié** (rouge pointillé).
 - En haut, le **F1 cumulé** additionne les avions des images corrigées. Après les 131 images, il vaut exactement 0,954.
 - Le curseur change le seuil ; il faut ensuite recliquer sur un bouton. Une image corrigée à un autre seuil que 0,5 ne compte pas dans le F1 cumulé.
 
-Pour une seule image, en ligne de commande : `uv run python scripts/predict.py data/raw/images/1453.jpg`.
-
-Pour vérifier que tout fonctionne : `uv run pytest` (31 tests).
-
 ## L'organisation du dépôt
 
-| Dossier | Contenu |
+| Dossier ou fichier | Contenu |
 |---|---|
-| `src/avions/` | le code du projet, sous forme de paquet Python : lecture des données, découpage, vignettes, classifieurs, système en deux étages (`pipeline.py`), évaluation, interface (`app.py`) |
-| `scripts/` | les commandes à lancer : préparer les données, entraîner, évaluer, annoter le corpus, lancer l'interface |
-| `configs/` | les réglages de chaque entraînement |
-| `notebooks/` | l'analyse des données (`01_eda.ipynb`) et les notebooks d'entraînement sur Colab |
-| `tests/` | les tests automatiques |
-| `data/splits/` | le découpage entraînement / validation / test (le dataset lui-même n'est pas dans Git) |
+| `etapes/` | le projet en 5 notebooks, un par étape du sujet : tout le code utilisé, dans l'ordre, déjà exécuté avec ses résultats |
+| `app.py` | l'interface de la démo, en un seul fichier (la même chaîne en deux étages que le notebook 5) |
 | `models/` | les deux modèles finaux : le détecteur et le classifieur |
-| `runs/` | les traces des entraînements et des évaluations : courbes, métriques, matrices de confusion |
-| `reports/` | le corpus de test annoté et les figures de l'analyse des données |
-| `docs/` | le rapport, l'architecture, le journal des décisions, le plan |
-| `oral/` | la préparation de l'oral : le guide (et `guide_images/`, des copies allégées des figures de l'EDA), les fiches, les raccourcis de la démo et du code |
+| `data/splits/` | le découpage entraînement / validation / test (le dataset lui-même n'est pas dans Git) |
+| `runs/` | les courbes d'entraînement des deux modèles finaux, et les scores des évaluations (y compris ceux des modèles écartés) |
+| `reports/corpus_test_annote/` | le corpus de test annoté par le modèle |
+| `docs/` | le rapport et le journal des décisions |
+| `oral/` | la préparation de l'oral : le guide (et `guide_images/`, les figures de l'EDA), les fiches, les raccourcis de la démo et du code |
 
 ## Les étapes du projet
 
 Elles suivent la démarche du prof. Il nous a demandé en séance de faire la détection avant la classification.
 
-| Étape | Ce qu'on a fait | Code | Résultats |
+| Étape | Ce qu'on a fait | Notebook | Résultats |
 |---|---|---|---|
-| 1. Analyse des données | EDA : qualité, types, tailles, quasi-doublons, corrélations | `notebooks/01_eda.ipynb` | `reports/figures/eda/` |
-| 2. Préparation | découpage 80 / 10 / 10 par image, format YOLO, vignettes | `scripts/make_splits.py`, `scripts/prepare_yolo.py`, `scripts/make_crops.py` | `data/splits/splits.csv` |
-| 3. Détection | YOLO11n à 1 classe « avion » (et le témoin à 20 classes), entraînés sur Colab | `configs/detecteur_*.yaml`, `scripts/train_detector.py`, `notebooks/colab_entrainement.ipynb` | `runs/detecteur_*/` |
-| 4. Classification | forêt aléatoire, petit CNN, ResNet-18 avec et sans pré-entraînement | `scripts/train_baseline.py`, `scripts/train_classifier.py`, `scripts/evaluate_classifiers.py`, `configs/classifieur_*.yaml`, `notebooks/colab_classification.ipynb` | `runs/baseline_rf/`, `runs/classifieur_*/`, `runs/classifieurs_val/`, `runs/classifieurs_test/` |
-| 5. Intégration | le système en deux étages, l'évaluation finale, le corpus annoté, l'interface | `src/avions/pipeline.py`, `scripts/evaluate_systems.py`, `scripts/annotate_corpus.py`, `scripts/app.py` | `runs/comparaison_*/`, `reports/corpus_test_annote/` |
+| 1. Analyse des données | EDA : qualité, types, tailles, quasi-doublons, corrélations | `etapes/1_analyse_des_donnees.ipynb` | les figures, dans le notebook |
+| 2. Préparation | découpage 80 / 10 / 10 par image, format YOLO, vignettes | `etapes/2_preparation_des_donnees.ipynb` | `data/splits/splits.csv` |
+| 3. Détection | YOLO11n à 1 classe « avion », entraîné sur Colab | `etapes/3_detection.ipynb` | `runs/detecteur_1classe/` |
+| 4. Classification | ResNet-18 pré-entraîné, comparé à une forêt aléatoire, un petit CNN et un ResNet-18 sans pré-entraînement | `etapes/4_classification.ipynb` | `runs/classifieur_resnet18/`, `runs/classifieurs_val/`, `runs/classifieurs_test/` |
+| 5. Intégration | le système en deux étages, le choix du seuil, l'évaluation finale (avec le témoin à 20 classes), le corpus annoté, l'interface | `etapes/5_integration.ipynb` et `app.py` | `runs/comparaison_val/`, `runs/comparaison_test/`, `reports/corpus_test_annote/` |
 | 6. Déploiement | conteneur Docker | *(à venir)* | |
 
 ## Reproduire les résultats
 
-```bash
-uv run python scripts/make_splits.py       # découpage (déjà fourni : data/splits/splits.csv)
-uv run python scripts/prepare_yolo.py      # dataset au format YOLO
-uv run python scripts/make_crops.py        # vignettes pour les classifieurs
-uv run python scripts/train_baseline.py    # forêt aléatoire (sur le processeur)
-# détecteurs et réseaux : notebooks/colab_entrainement.ipynb et colab_classification.ipynb (sur GPU)
-uv run python scripts/evaluate_systems.py      # les deux systèmes, sur la validation
-uv run python scripts/evaluate_classifiers.py  # les classifieurs, sur la validation
-# évaluation finale sur le test, faite avec les réglages figés (runs/comparaison_test/, runs/classifieurs_test/)
-uv run python scripts/evaluate_systems.py --split test --je-confirme-le-test
-uv run python scripts/evaluate_classifiers.py --split test --je-confirme-le-test
-uv run python scripts/annotate_corpus.py       # corpus de test annoté
-```
+Ouvrir les notebooks d'`etapes/` dans l'ordre (VS Code ou Jupyter, avec l'environnement du projet) et les exécuter. Tout tourne sur le processeur : les notebooks rechargent les modèles entraînés de `models/` et les mesurent à nouveau sur la validation. Le test, mesuré une seule fois à la fin, n'est jamais recalculé : son résultat est relu dans `runs/comparaison_test/`.
 
-Seuls les deux modèles de la démo sont dans Git. Les évaluations ont aussi besoin du témoin (`models/detecteur_20classes.pt`) et des modèles de comparaison (`baseline_rf.joblib`, `classifieur_smallcnn.pt`, `classifieur_resnet18_sans_pretrain.pt`, 90 Mo) : ils se réentraînent avec les commandes ci-dessus, ou sont disponibles sur demande.
-
-La carte graphique du PC plantait pendant les longs entraînements (décision D10). Ils ont donc été faits sur **Google Colab**. Le dossier `Mon Drive/projet_avions` reprend la même arborescence que ce projet, et `uv run python scripts/sync_drive.py` synchronise les deux dans les deux sens (le plus récent gagne).
-
-Avant de publier des notebooks passés par Colab, lancer `uv run python scripts/nettoyer_notebooks.py`. Ce script retire les informations personnelles que Colab y enregistre.
+La carte graphique du PC plantait pendant les longs entraînements (décision D10). Ils ont donc été faits sur **Google Colab**. Pour les relancer, la partie « Pour relancer sur Google Colab », en tête des notebooks 2, 3 et 4, explique la marche à suivre ; il suffit ensuite de mettre `ENTRAINER = True` dans les notebooks 3 et 4.
 
 ## Licence
 

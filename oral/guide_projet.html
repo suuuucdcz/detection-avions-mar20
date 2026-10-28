@@ -230,7 +230,7 @@ pre.code { margin: 0; font: 500 12.5px/1.6 var(--font-mono); background: var(--b
         </ol>
       </li>
       <li><a href="#oral">Préparer l'oral</a></li>
-      <li><a href="#code">Le code, fichier par fichier</a></li>
+      <li><a href="#code">Le code, étape par étape</a></li>
       <li><a href="#glossaire">Glossaire</a></li>
     </ol>
   </nav>
@@ -310,7 +310,7 @@ pre.code { margin: 0; font: 500 12.5px/1.6 var(--font-mono); background: var(--b
           <div class="bande"><span class="rang">Étape 1</span><span>Analyse des données</span><span>Séance 1</span><span class="statut">Fait</span></div>
           <div class="corps">
             <h3>Connaître ses données avant d'entraîner</h3>
-            <p class="but">Le cours insiste : « Foncer, c'est échouer ». Avant d'entraîner le moindre modèle, on a étudié le dataset dans le notebook <code>notebooks/01_eda.ipynb</code>, en suivant la méthode du cours en quatre temps : l'inspection initiale, la qualité des données, l'analyse univariée (une variable à la fois), puis l'analyse bivariée et multivariée (les liens entre variables). On a terminé en regardant les images elles-mêmes. Chaque constat devait déboucher sur une décision pour la suite.</p>
+            <p class="but">Le cours insiste : « Foncer, c'est échouer ». Avant d'entraîner le moindre modèle, on a étudié le dataset dans le notebook <code>etapes/1_analyse_des_donnees.ipynb</code>, en suivant la méthode du cours en quatre temps : l'inspection initiale, la qualité des données, l'analyse univariée (une variable à la fois), puis l'analyse bivariée et multivariée (les liens entre variables). On a terminé en regardant les images elles-mêmes. Chaque constat devait déboucher sur une décision pour la suite.</p>
 
             <div class="sous-partie">
               <h4>1.1 · Inspection initiale : que contiennent les données ?</h4>
@@ -881,7 +881,7 @@ pre.code { margin: 0; font: 500 12.5px/1.6 var(--font-mono); background: var(--b
     <!-- ORAL -->
     <section id="oral">
       <h2><span class="numero">Partie D</span>Préparer l'oral</h2>
-      <div class="texte"><p><strong>La démonstration</strong> se fait dans l'interface (<code>uv run python scripts/app.py</code>). Sur un projecteur, passer le navigateur en plein écran (F11). Un déroulé possible, en deux minutes :</p></div>
+      <div class="texte"><p><strong>La démonstration</strong> se fait dans l'interface (<code>uv run python app.py</code>). Sur un projecteur, passer le navigateur en plein écran (F11). Un déroulé possible, en deux minutes :</p></div>
       <ol class="demo">
         <li><span>L'interface s'ouvre sur <strong>★ 3803</strong>. « Détecter », puis « Corriger » : 13 justes, 1 A19 qui était un A1, et 3 A1 oubliés. On explique les deux étages, puis le lien avec l'analyse des données : A1 et A19 partagent 67 images et se ressemblent.</span></li>
         <li><span>On fait défiler la galerie presque jusqu'en bas et on clique sur l'image <strong>3734</strong>, puis « Corriger » : 9 avions sur 9 trouvés, mais 2 boîtes rouges « doublon ». Deux avions ont chacun reçu deux boîtes ; un avion ne peut être trouvé qu'une fois, donc la deuxième boîte de chacun compte comme une erreur.</span></li>
@@ -903,7 +903,7 @@ pre.code { margin: 0; font: 500 12.5px/1.6 var(--font-mono); background: var(--b
 
       <div class="texte"><p><strong>Où en est le projet.</strong></p></div>
       <ul class="reste">
-        <li><span class="pastille fait">Fait</span><span>L'application : détection, classification, interface, 31 tests automatiques.</span></li>
+        <li><span class="pastille fait">Fait</span><span>L'application : détection, classification, interface, et le projet rangé en 5 notebooks (<code>etapes/</code>).</span></li>
         <li><span class="pastille fait">Fait</span><span>Le dépôt Git public : <a href="https://github.com/suuuucdcz/detection-avions-mar20">github.com/suuuucdcz/detection-avions-mar20</a>.</span></li>
         <li><span class="pastille fait">Fait</span><span>Le corpus de test annoté par le modèle (<code>reports/corpus_test_annote/</code>).</span></li>
         <li><span class="pastille fait">Fait</span><span>Le corpus annoté est dans Git (XML, aperçus, tableau, notice), et le rapport donne son lien GitHub.</span></li>
@@ -914,54 +914,29 @@ pre.code { margin: 0; font: 500 12.5px/1.6 var(--font-mono); background: var(--b
 
     <!-- CODE -->
     <section id="code">
-      <h2><span class="numero">Partie E</span>Le code, fichier par fichier</h2>
+      <h2><span class="numero">Partie E</span>Le code, étape par étape</h2>
       <div class="texte">
-        <p>Le sujet le précise : il faut <strong>savoir ouvrir le projet pour expliquer une partie du code</strong>. Le code est dans le dossier du projet (<code>projet_ia</code>). Ouvre-le dans VS Code, ou double-clique sur <code>oral/ouvrir_le_code.bat</code>, qui ouvre le projet avec les fichiers des 10 passages ci-dessous.</p>
-        <p>Il y a deux sortes de fichiers Python : <code>src/avions/</code> contient <strong>les fonctions</strong> (la bibliothèque du projet), et <code>scripts/</code> contient <strong>les commandes</strong> qu'on lance, et qui utilisent ces fonctions.</p>
+        <p>Le sujet le précise : il faut <strong>savoir ouvrir le projet pour expliquer une partie du code</strong>. Tout le code est dans <strong>5 notebooks</strong>, un par étape du sujet, dans le dossier <code>etapes/</code> : chacun contient son code dans l'ordre, avec les explications et les résultats déjà affichés. L'interface de la démo est dans un seul fichier, <code>app.py</code>. Double-clique sur <code>oral/ouvrir_le_code.bat</code> : il ouvre les 5 notebooks et <code>app.py</code> dans VS Code.</p>
       </div>
       <pre class="code">projet_ia/
-├── src/avions/            LA BIBLIOTHÈQUE DU PROJET : toutes les fonctions
-│   ├── constants.py         chemins des dossiers, liste des 20 types A1…A20
-│   ├── data/                les données
-│   │   ├── voc.py             lire les annotations XML  (étape 1)
-│   │   ├── images.py          lire une image en couleurs RGB
-│   │   ├── duplicates.py      repérer les quasi-doublons (empreinte dHash)
-│   │   ├── split.py           découper en entraînement / validation / test  (étape 2)
-│   │   ├── to_yolo.py         convertir les annotations au format YOLO
-│   │   └── crops.py           découper une vignette autour d&#x27;un avion
-│   ├── classif/             le classifieur  (étape 4)
-│   │   ├── models.py          ResNet-18 et petit CNN
-│   │   ├── transforms.py      data augmentation
-│   │   ├── dataset.py         donner les vignettes à PyTorch
-│   │   ├── metrics.py         macro-F1, matrice de confusion
-│   │   └── baseline.py        caractéristiques HOG de la forêt aléatoire
-│   ├── pipeline.py          LES DEUX ÉTAGES ENSEMBLE  (étape 5)
-│   ├── evaluation.py        IoU, juste ou faux, mAP
-│   ├── export.py            écrire les XML du corpus annoté
-│   ├── visualization.py     dessiner les boîtes
-│   └── app.py               L&#x27;INTERFACE de la démo
-├── scripts/               LES COMMANDES : chacune utilise les fonctions de src/avions
-│   ├── make_splits.py, prepare_yolo.py, make_crops.py      préparer les données
-│   ├── train_detector.py, train_classifier.py, train_baseline.py   entraîner
-│   ├── evaluate_systems.py, evaluate_classifiers.py        évaluer
-│   ├── annotate_corpus.py   produire le corpus de test annoté
-│   ├── predict.py           annoter une seule image
-│   ├── app.py               lancer l&#x27;interface
-│   └── sync_drive.py, nettoyer_notebooks.py   outils : Drive et notebooks Colab
-├── configs/               les réglages de chaque entraînement (fichiers YAML)
-├── notebooks/             01_eda.ipynb (l&#x27;analyse des données) ; colab_*.ipynb (entraînements sur GPU)
-├── tests/                 31 tests automatiques (uv run pytest)
-├── models/                detecteur_1classe.pt et classifieur_resnet18.pt, chargés par la démo
+├── etapes/                LE PROJET EN 5 NOTEBOOKS, un par étape : tout le code, dans l&#x27;ordre
+│   ├── 1_analyse_des_donnees.ipynb      lire les XML ; qualité, types, tailles, quasi-doublons
+│   ├── 2_preparation_des_donnees.ipynb  découpage train / validation / test, format YOLO, vignettes
+│   ├── 3_detection.ipynb                YOLO11n à une classe : réglages, entraînement, validation
+│   ├── 4_classification.ipynb           ResNet-18 : data augmentation, entraînement, comparaison
+│   └── 5_integration.ipynb              les deux étages, l&#x27;IoU, le seuil, le test, le corpus
+├── app.py                 L&#x27;INTERFACE de la démo, en un seul fichier (la même chaîne que le notebook 5)
+├── models/                detecteur_1classe.pt et classifieur_resnet18.pt
 ├── data/                  raw/ (le dataset du prof, pas dans Git) et splits/splits.csv
-├── runs/                  courbes et métriques de chaque entraînement et évaluation
-├── reports/               le corpus de test annoté et les figures de l&#x27;EDA
-├── docs/                  le rapport, l&#x27;architecture, le journal des décisions
+├── runs/                  les courbes d&#x27;entraînement des deux modèles, et les scores
+├── reports/               le corpus de test annoté
+├── docs/                  le rapport et le journal des décisions
 └── oral/                  ce dossier : le guide, les fiches, les raccourcis</pre>
-      <div class="texte"><p><strong>Les 10 passages à savoir montrer</strong>, dans l'ordre du projet. Pour chacun : le fichier, ce qu'il fait, l'extrait de code (« … » marque les lignes coupées), ce qu'il faut dire, et une question probable.</p></div>
+      <div class="texte"><p><strong>Les 10 passages à savoir montrer</strong>, dans l'ordre du projet. Pour chacun : où il est, ce qu'il fait, l'extrait de code (« … » marque les lignes coupées), ce qu'il faut dire, et une question probable.</p></div>
       <div class="notions">
         <article class="notion" id="code-1">
           <header><span class="num mono">01</span><h3>Lire les annotations</h3></header>
-          <p class="but"><code>src/avions/data/voc.py</code> · <strong>read_voc_file et load_annotations</strong> · Étape 1</p>
+          <p class="but"><code>etapes/1_analyse_des_donnees.ipynb</code>, partie 0 · <strong>read_voc_file et load_annotations</strong> · Étape 1</p>
           <p class="definir">Lit les 1 331 fichiers XML et les range dans un tableau pandas d&#x27;une ligne par avion. C&#x27;est la base de toute l&#x27;analyse des données.</p>
           <pre class="code">def read_voc_file(xml_path: Path) -&gt; list[dict]:
     &quot;&quot;&quot;Lit un fichier XML et renvoie une liste de dictionnaires, un par avion annoté.&quot;&quot;&quot;
@@ -983,10 +958,10 @@ pre.code { margin: 0; font: 500 12.5px/1.6 var(--font-mono); background: var(--b
         </article>
         <article class="notion" id="code-2">
           <header><span class="num mono">02</span><h3>Découper sans fuite de données</h3></header>
-          <p class="but"><code>src/avions/data/split.py</code> · <strong>split_images et best_split</strong> · Étape 2</p>
+          <p class="but"><code>etapes/2_preparation_des_donnees.ipynb</code>, partie 1.3 · <strong>split_images et best_split</strong> · Étape 2</p>
           <p class="definir">Répartit les images en 10 paquets : 1 pour le test, 1 pour la validation, 8 pour l&#x27;entraînement.</p>
           <pre class="code">splitter = StratifiedGroupKFold(n_splits=N_FOLDS, shuffle=True, random_state=seed)
-# Une ligne par avion : la classe sert à équilibrer, le groupe de son image empêche de couper
+# Une ligne par avion : la classe sert à équilibrer, le groupe empêche de couper
 folds = splitter.split(objects, objects[&quot;class_name&quot;], objects[&quot;image_id&quot;].map(groups))
 for fold, (_, indices) in enumerate(folds):
     name = &quot;test&quot; if fold == 0 else &quot;val&quot; if fold == 1 else &quot;train&quot;
@@ -996,7 +971,7 @@ for fold, (_, indices) in enumerate(folds):
         </article>
         <article class="notion" id="code-3">
           <header><span class="num mono">03</span><h3>Fabriquer une vignette</h3></header>
-          <p class="but"><code>src/avions/data/crops.py</code> · <strong>make_crop</strong> · Étapes 2 et 5</p>
+          <p class="but"><code>etapes/2_preparation_des_donnees.ipynb</code>, partie 3 (et <code>app.py</code>) · <strong>make_crop</strong> · Étapes 2 et 5</p>
           <p class="definir">Découpe un carré centré sur l&#x27;avion, de 2 fois son plus grand côté, et le met en 256 × 256 pixels.</p>
           <pre class="code">def make_crop(image: np.ndarray, box: tuple[float, float, float, float]) -&gt; np.ndarray:
     &quot;&quot;&quot;Découpe un carré centré sur la boîte (xmin, ymin, xmax, ymax) et le redimensionne.&quot;&quot;&quot;
@@ -1012,42 +987,51 @@ for fold, (_, indices) in enumerate(folds):
         </article>
         <article class="notion" id="code-4">
           <header><span class="num mono">04</span><h3>Entraîner le détecteur</h3></header>
-          <p class="but"><code>configs/detecteur_1classe.yaml et scripts/train_detector.py</code> · <strong>main</strong> · Étape 3</p>
-          <p class="definir">Les réglages sont dans un fichier YAML ; le script les passe tels quels à Ultralytics, qui entraîne YOLO.</p>
-          <pre class="code"># configs/detecteur_1classe.yaml
-name: detecteur_1classe   # nom du dossier dans runs/ et du fichier de poids dans models/
-model: yolo11n.pt         # YOLO11 « nano » pré-entraîné sur COCO : transfer learning
-single_cls: true          # A1…A20 sont fusionnées en une seule classe « avion »
-imgsz: 800                # résolution native des images : on ne les réduit pas
-# … epochs: 80, batch: 16, workers: 4, seed: 0
-patience: 15              # early stopping : arrêt si la validation ne progresse plus
-fliplr: 0.5               # retournement gauche-droite, une image sur deux
-flipud: 0.5               # retournement haut-bas, une image sur deux
-degrees: 0                # pas de rotation quelconque : elle agrandirait les boîtes horizontales
-close_mosaic: 10          # les 10 dernières epochs sans « mosaïque »
+          <p class="but"><code>etapes/3_detection.ipynb</code>, parties 1 et 2 · <strong>CONFIG et model.train</strong> · Étape 3</p>
+          <p class="definir">Les réglages sont dans un dictionnaire, CONFIG ; on les passe tels quels à Ultralytics, qui entraîne YOLO.</p>
+          <pre class="code">CONFIG = {
+    &quot;name&quot;: &quot;detecteur_1classe&quot;,  # nom du dossier dans runs/ et du fichier dans models/
+    &quot;model&quot;: &quot;yolo11n.pt&quot;,  # YOLO11 « nano » pré-entraîné sur COCO : transfer learning
+    &quot;single_cls&quot;: True,  # A1…A20 fusionnées en une seule classe « avion »
+    # Entraînement
+    &quot;imgsz&quot;: 800,  # résolution d&#x27;origine des images : on ne les réduit pas
+    # … epochs 80, batch 16, workers 4, seed 0
+    &quot;patience&quot;: 15,  # early stopping : arrêt si la validation stagne 15 epochs
+    # Data augmentation
+    &quot;fliplr&quot;: 0.5,  # retournement gauche-droite, une image sur deux
+    &quot;flipud&quot;: 0.5,  # retournement haut-bas, une image sur deux
+    &quot;degrees&quot;: 0,  # pas de rotation quelconque : elle agrandirait les boîtes
+    &quot;close_mosaic&quot;: 10,  # 10 dernières epochs sans « mosaïque » (4 images collées)
+}
 
-# scripts/train_detector.py
-model = YOLO(config.pop(&quot;model&quot;))
-model.train(data=str(YOLO_DATASET_YAML), project=…, exist_ok=True, **config)</pre>
-          <div class="projet"><h4>Ce qu'il faut dire</h4><p>Les scripts d&#x27;entraînement ne contiennent aucun hyperparamètre écrit en dur : ils sont tous dans configs/, et on peut en remplacer un en ligne de commande (par exemple batch=8). Le même script a servi pour le détecteur et pour le témoin à 20 classes, avec deux fichiers YAML différents. Les réglages de l&#x27;application (seuil de 0,5, NMS de 0,7) sont, eux, des constantes nommées en tête de pipeline.py.</p></div>
+ENTRAINER = False
+
+if ENTRAINER:
+    model = YOLO(CONFIG[&quot;model&quot;])  # poids COCO, téléchargés automatiquement la première fois
+    reglages = {key: value for key, value in CONFIG.items() if key != &quot;model&quot;}
+    # …
+    model.train(data=str(YOLO_DATASET_YAML), project=str(RUNS_DIR), exist_ok=True, **reglages)</pre>
+          <div class="projet"><h4>Ce qu'il faut dire</h4><p>Tous les réglages sont regroupés dans CONFIG, au début du notebook : aucun n&#x27;est écrit en dur ailleurs, et model.train() d&#x27;Ultralytics fait tout l&#x27;entraînement. ENTRAINER vaut False : le modèle a été entraîné sur Colab, car la carte graphique du PC plantait. Le notebook recharge donc models/detecteur_1classe.pt et le re-mesure sur la validation. Le même code a servi pour le témoin à 20 classes, sans single_cls. Les réglages de l&#x27;application (seuil de 0,5, NMS de 0,7) sont des constantes nommées au début de la partie 1 du notebook 5.</p></div>
           <div class="qr"><p class="question">« Pourquoi pas de rotation pour le détecteur, alors que le classifieur en a ? »</p><p class="reponse">Une boîte reste horizontale : si on tourne l&#x27;image de 45°, la boîte qui contient l&#x27;avion tourné devient beaucoup plus grande que l&#x27;avion. Le détecteur n&#x27;a donc que des retournements ; le classifieur, qui n&#x27;a pas de boîte à prédire, peut tourner librement.</p></div>
         </article>
         <article class="notion" id="code-5">
           <header><span class="num mono">05</span><h3>Le classifieur et le transfer learning</h3></header>
-          <p class="but"><code>src/avions/classif/models.py</code> · <strong>build_model</strong> · Étape 4</p>
+          <p class="but"><code>etapes/4_classification.ipynb</code>, partie 3 (et <code>app.py</code>) · <strong>build_model</strong> · Étape 4</p>
           <p class="definir">Charge un ResNet-18 déjà entraîné sur ImageNet et remplace sa dernière couche par une couche à 20 sorties.</p>
-          <pre class="code">if architecture == &quot;resnet18&quot;:
+          <pre class="code">def build_model(pretrained: bool) -&gt; nn.Module:
+    &quot;&quot;&quot;ResNet-18 avec une sortie par type d&#x27;avion (20) au lieu des 1000 classes d&#x27;ImageNet.&quot;&quot;&quot;
     model = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1 if pretrained else None)
     model.fc = nn.Linear(model.fc.in_features, len(CLASSES))  # nouvelle « tête » à 20 sorties
     return model</pre>
-          <div class="projet"><h4>Ce qu'il faut dire</h4><p>C&#x27;est tout le transfer learning en deux lignes. weights=… charge les poids appris sur ImageNet (le backbone sait déjà voir des formes). model.fc est la dernière couche : on remplace ses 1 000 sorties par 20, une par type d&#x27;avion. Avec pretrained=False, on obtient notre comparaison « sans pré-entraînement ».</p></div>
+          <div class="projet"><h4>Ce qu'il faut dire</h4><p>C&#x27;est tout le transfer learning en deux lignes. weights=… charge les poids appris sur ImageNet (le backbone sait déjà voir des formes). model.fc est la dernière couche : on remplace ses 1 000 sorties par 20, une par type d&#x27;avion. Avec pretrained=False, on obtient le même réseau aux poids tirés au hasard : c&#x27;est ainsi qu&#x27;on a mesuré la comparaison « sans pré-entraînement » (partie 7).</p></div>
           <div class="qr"><p class="question">« Qu&#x27;est-ce que model.fc ? »</p><p class="reponse">La dernière couche, entièrement connectée (nn.Linear) : 20 neurones, chacun fait une somme pondérée des 512 nombres qui résument la vignette, plus un biais (512 × 20 + 20 = 10 260 poids). On obtient 20 scores, un par type, que softmax transforme en probabilités.</p></div>
         </article>
         <article class="notion" id="code-6">
           <header><span class="num mono">06</span><h3>La data augmentation</h3></header>
-          <p class="but"><code>src/avions/classif/transforms.py</code> · <strong>train_transform</strong> · Étape 4</p>
+          <p class="but"><code>etapes/4_classification.ipynb</code>, partie 2 · <strong>train_transform</strong> · Étape 4</p>
           <p class="definir">À chaque passage, la vignette est modifiée au hasard avant d&#x27;entrer dans le réseau.</p>
           <pre class="code">def train_transform() -&gt; v2.Compose:
+    &quot;&quot;&quot;Entraînement : data augmentation (une version différente à chaque passage).&quot;&quot;&quot;
     return v2.Compose(
         [
             v2.ToImage(),
@@ -1064,12 +1048,13 @@ model.train(data=str(YOLO_DATASET_YAML), project=…, exist_ok=True, **config)</
         </article>
         <article class="notion" id="code-7">
           <header><span class="num mono">07</span><h3>La boucle d&#x27;entraînement : descente de gradient et early stopping</h3></header>
-          <p class="but"><code>scripts/train_classifier.py</code> · <strong>train_one_epoch et main</strong> · Étape 4</p>
+          <p class="but"><code>etapes/4_classification.ipynb</code>, partie 4 · <strong>train_one_epoch et entrainer</strong> · Étape 4</p>
           <p class="definir">Pour chaque paquet de 64 vignettes : prédire, mesurer l&#x27;erreur, calculer le gradient, corriger les poids. Après chaque epoch, on mesure la macro-F1 de validation.</p>
           <pre class="code"># train_one_epoch : un passage sur toutes les vignettes d&#x27;entraînement
 for images, labels in loader:
     images, labels = images.to(device), labels.to(device)
     optimizer.zero_grad()
+    # Sur carte graphique, calcul en demi-précision : plus rapide, même résultat
     with torch.autocast(device_type=device.type, enabled=device.type == &quot;cuda&quot;):
         loss = criterion(model(images), labels)  # 1. prédiction et erreur
     scaler.scale(loss).backward()  # 2. gradient de l&#x27;erreur par rapport à chaque poids
@@ -1077,49 +1062,52 @@ for images, labels in loader:
     scaler.update()
     # …
 
-# main : la boucle sur les epochs
+# entrainer : la boucle sur les epochs
 for epoch in range(1, config[&quot;epochs&quot;] + 1):
-    set_backbone_trainable(model, trainable=epoch &gt; freeze_epochs)  # gelé les 3 premières
+    # Transfer learning : d&#x27;abord la nouvelle tête seule (backbone gelé), puis tout
+    set_backbone_trainable(model, trainable=epoch &gt; config[&quot;freeze_epochs&quot;])
     train_loss = train_one_epoch(model, train_loader, criterion, optimizer, scaler, device)
     # … après l&#x27;epoch : macro-F1 sur la validation
-    if val_scores[&quot;macro_f1&quot;] &gt; best_f1:  # meilleur modèle jusqu&#x27;ici : on le garde
-        best_f1, best_epoch = val_scores[&quot;macro_f1&quot;], epoch
+    if val[&quot;macro_f1&quot;] &gt; best_f1:  # meilleur modèle jusqu&#x27;ici : on le garde
+        best_f1, best_epoch = val[&quot;macro_f1&quot;], epoch
         torch.save(…)
-    elif epoch - best_epoch &gt;= config.get(&quot;patience&quot;, config[&quot;epochs&quot;]):
-        break  # EARLY STOPPING</pre>
+    elif epoch - best_epoch &gt;= config[&quot;patience&quot;]:
+        print(…)
+        break</pre>
           <div class="projet"><h4>Ce qu'il faut dire</h4><p>Ce sont les trois temps de la descente de gradient. backward() calcule le gradient par rétropropagation ; l&#x27;optimiseur AdamW fait un pas contre le gradient, avec une moyenne des gradients récents et un pas adapté à chaque poids. Le learning rate (0,0003 au départ) fixe la taille des pas et diminue au fil des epochs ; le weight decay (0,0001) pénalise les poids trop grands. Pendant les 3 premières epochs, seule la nouvelle couche finale apprend (backbone gelé), puis tout le réseau : la macro-F1 de validation passe de 0,45 à l&#x27;epoch 3 à 0,94 à l&#x27;epoch 4. On garde le modèle de la meilleure epoch, et on s&#x27;arrête si la validation ne progresse plus pendant 5 epochs. Sur GPU, autocast calcule en précision réduite et le scaler évite que les petits gradients deviennent nuls ; sur le processeur, les deux sont désactivés.</p></div>
           <div class="qr"><p class="question">« À quoi sert zero_grad() ? »</p><p class="reponse">PyTorch additionne les gradients d&#x27;un appel à l&#x27;autre : on les remet à zéro avant chaque paquet, sinon on corrigerait avec ceux du paquet précédent.</p></div>
         </article>
         <article class="notion" id="code-8">
           <header><span class="num mono">08</span><h3>Les deux étages ensemble</h3></header>
-          <p class="but"><code>src/avions/pipeline.py</code> · <strong>AircraftPipeline.predict</strong> · Étape 5</p>
+          <p class="but"><code>etapes/5_integration.ipynb</code>, partie 1 · <strong>AircraftPipeline.predict</strong> · Étape 5</p>
           <p class="definir">Le cœur de l&#x27;application : détecter, découper, classer, puis combiner les deux confiances.</p>
-          <pre class="code"># Étage 1 : où sont les avions ?
+          <pre class="code"># Étage 1 : où sont les avions ? La confiance finale ne peut pas dépasser celle
+# du détecteur : on écarte d&#x27;emblée les boîtes dont il doute trop.
 result = self.detector.predict(image_bgr, imgsz=DETECTOR_IMGSZ, conf=min_detector, iou=NMS_IOU, …)[0]
 boxes = result.boxes.xyxy.cpu().numpy()
 detector_scores = result.boxes.conf.cpu().numpy()
 # … (si aucune boîte : return [])
 
-# Étage 2 : quel type d&#x27;avion ? Une vignette par boîte, toutes classées d&#x27;un coup.
+# Étage 2 : quel type ? Une vignette par boîte, toutes classées d&#x27;un coup.
 crops = [cv2.cvtColor(make_crop(image_bgr, tuple(box)), cv2.COLOR_BGR2RGB) for box in boxes]
 batch = torch.stack([self.transform(crop) for crop in crops]).to(self.device)
 probabilities = self.classifier(batch).softmax(dim=1).cpu().numpy()
 
 for box, detector_score, probs in zip(boxes, detector_scores, probabilities, strict=True):
     class_index = int(probs.argmax())
-    score = float(detector_score * probs[class_index])  # confiance finale
-    to_review = score &lt; self.min_score  # sous le seuil (0,5)
+    score = float(detector_score * probs[class_index])
+    to_review = score &lt; self.min_score  # pas assez sûr d&#x27;être un avion ET du type
     if to_review and (
         self.review_min_detector is None or detector_score &lt; self.review_min_detector
     ):
-        continue  # écarté (dans l&#x27;interface, review_min_detector vaut None)
+        continue  # écarté
     # … sinon, on garde la détection</pre>
           <div class="projet"><h4>Ce qu'il faut dire</h4><p>C&#x27;est l&#x27;architecture du rapport, en code. conf=min_detector : le détecteur élimine d&#x27;emblée les boîtes sous 0,5, car la confiance finale ne peut pas dépasser la sienne. iou=NMS_IOU (0,7) : quand deux boîtes ont une IoU de plus de 0,7, on ne garde que la plus sûre. softmax transforme les 20 scores en probabilités. La confiance finale est le produit des deux : une boîte n&#x27;est gardée que si on est sûr à la fois que c&#x27;est un avion ET de son type.</p></div>
           <div class="qr"><p class="question">« Pourquoi multiplier les deux confiances ? »</p><p class="reponse">Le classifieur sert de second filtre : sur une boîte qui n&#x27;est pas un avion, il hésite, et le produit passe sous le seuil. En validation, à seuil égal de 0,25, cela fait passer les fausses alarmes de 43 à 16, sans perdre un seul avion bien classé ; au seuil retenu de 0,5, il n&#x27;en reste que 4 pour 787 avions.</p></div>
         </article>
         <article class="notion" id="code-9">
           <header><span class="num mono">09</span><h3>Juger une réponse : l&#x27;IoU</h3></header>
-          <p class="but"><code>src/avions/evaluation.py</code> · <strong>box_iou et match_details</strong> · Évaluation</p>
+          <p class="but"><code>etapes/5_integration.ipynb</code>, partie 3 (et <code>app.py</code>) · <strong>box_iou et match_details</strong> · Évaluation</p>
           <p class="definir">Calcule le recouvrement de deux boîtes, puis décide si chaque réponse est juste, du mauvais type, ou une fausse alarme.</p>
           <pre class="code">def box_iou(boxes_a: np.ndarray, boxes_b: np.ndarray) -&gt; np.ndarray:
     &quot;&quot;&quot;IoU de chaque boîte de A avec chaque boîte de B (boîtes au format xmin, ymin, xmax, ymax).&quot;&quot;&quot;
@@ -1139,7 +1127,7 @@ for p in np.argsort(-pred_scores):
         </article>
         <article class="notion" id="code-10">
           <header><span class="num mono">10</span><h3>L&#x27;interface de la démo</h3></header>
-          <p class="but"><code>src/avions/app.py</code> · <strong>corriger et creer_demo</strong> · Démo</p>
+          <p class="but"><code>app.py</code>, partie « L'interface » · <strong>corriger et creer_demo</strong> · Démo</p>
           <p class="definir">corriger() compare les réponses à la vérité avec la même règle que nos scores ; creer_demo() construit la page Gradio et relie chaque bouton à une fonction.</p>
           <pre class="code">for d, statut, t in zip(detections, statuts, associes, strict=True):
     if statut == &quot;bon_type&quot;:
@@ -1157,26 +1145,22 @@ galerie.select(sur_vignette, [etat_cumul], sorties)
 bouton_hasard.click(au_hasard, [etat_cumul], [galerie, *sorties])
 bouton_detecter.click(detecter, [etat_image, seuil, etat_cumul], sorties)
 bouton_corriger.click(corriger_clic, [etat_image, seuil, etat_cumul], sorties)</pre>
-          <div class="projet"><h4>Ce qu'il faut dire</h4><p>corriger() réutilise match_details de evaluation.py : la démo applique exactement la règle de nos scores officiels. Dans Gradio, .click(fonction, entrées, sorties) dit : quand on clique, appeler la fonction avec ces entrées, et afficher ce qu&#x27;elle renvoie dans ces sorties. galerie.select(…) fait pareil au clic sur une vignette ; Gradio passe en plus à sur_vignette un objet evt (gr.SelectData), dont evt.index donne la vignette cliquée. Les deux gr.State gardent, pour chaque visiteur, l&#x27;image choisie et les comptes du F1 cumulé : ils sont mis à jour parce que chaque fonction les renvoie parmi ses sorties.</p></div>
+          <div class="projet"><h4>Ce qu'il faut dire</h4><p>corriger() réutilise match_details, la même fonction que dans le notebook 5 (partie 3) : la démo applique exactement la règle de nos scores officiels. Dans Gradio, .click(fonction, entrées, sorties) dit : quand on clique, appeler la fonction avec ces entrées, et afficher ce qu&#x27;elle renvoie dans ces sorties. galerie.select(…) fait pareil au clic sur une vignette ; Gradio passe en plus à sur_vignette un objet evt (gr.SelectData), dont evt.index donne la vignette cliquée. Les deux gr.State gardent, pour chaque visiteur, l&#x27;image choisie et les comptes du F1 cumulé : ils sont mis à jour parce que chaque fonction les renvoie parmi ses sorties.</p></div>
           <div class="qr"><p class="question">« Comment l&#x27;interface sait-elle si une réponse est juste ? »</p><p class="reponse">Elle lit les annotations du prof pour l&#x27;image (la vérité) et applique match_details : une IoU d&#x27;au moins 0,5 avec un vrai avion libre, et le bon type.</p></div>
         </article>
       </div>
-      <div class="texte"><p><strong>Les autres fichiers</strong>, à connaître de nom :</p></div>
+      <div class="texte"><p><strong>Les autres parties</strong>, à connaître de nom :</p></div>
       <div class="tableau">
         <table>
-          <thead><tr><th>Fichier</th><th>Rôle</th></tr></thead>
+          <thead><tr><th>Où</th><th>Rôle</th></tr></thead>
           <tbody>
-            <tr><td><code>src/avions/constants.py</code></td><td>les chemins des dossiers et la liste des 20 types</td></tr>
-            <tr><td><code>src/avions/data/duplicates.py</code></td><td>l&#x27;empreinte visuelle dHash et les groupes de quasi-doublons</td></tr>
-            <tr><td><code>src/avions/data/to_yolo.py</code></td><td>conversion des XML au format texte de YOLO (classe, centre, largeur, hauteur, entre 0 et 1)</td></tr>
-            <tr><td><code>src/avions/classif/dataset.py</code></td><td>donne les vignettes une par une à PyTorch (image transformée, numéro du type) ; le DataLoader de train_classifier.py les regroupe ensuite par paquets de 64 et les mélange</td></tr>
-            <tr><td><code>src/avions/classif/metrics.py</code></td><td>macro-F1, rapport par type, matrice de confusion</td></tr>
-            <tr><td><code>src/avions/classif/baseline.py</code></td><td>les caractéristiques HOG (forme des contours) et la taille, pour la forêt aléatoire</td></tr>
-            <tr><td><code>src/avions/export.py</code></td><td>écrit les fichiers XML du corpus annoté, avec les balises &lt;score&gt; et &lt;a_verifier&gt;</td></tr>
-            <tr><td><code>src/avions/visualization.py</code></td><td>dessine les boîtes et les étiquettes sur les images</td></tr>
-            <tr><td><code>scripts/evaluate_systems.py</code></td><td>compare notre système et le témoin, avec le même code d&#x27;évaluation</td></tr>
-            <tr><td><code>scripts/annotate_corpus.py</code></td><td>annote les 131 images de test : le corpus du rapport</td></tr>
-            <tr><td><code>tests/</code></td><td>31 tests automatiques, par exemple : aucune image d&#x27;entraînement dans l&#x27;interface, les quasi-doublons dans le même jeu, le calcul du F1</td></tr>
+            <tr><td><code>etapes/2, partie 1.2</code></td><td>l&#x27;empreinte visuelle dHash et les groupes de quasi-doublons</td></tr>
+            <tr><td><code>etapes/2, partie 2</code></td><td>la conversion des XML au format texte de YOLO (classe, centre, largeur, hauteur, entre 0 et 1)</td></tr>
+            <tr><td><code>etapes/4, partie 1</code></td><td>CropDataset : donne les vignettes une par une à PyTorch (image transformée, numéro du type) ; le DataLoader les regroupe ensuite par paquets de 64 et les mélange</td></tr>
+            <tr><td><code>etapes/4, parties 6 et 7</code></td><td>macro-F1, matrice de confusion, et les scores des modèles écartés</td></tr>
+            <tr><td><code>etapes/5, partie 4</code></td><td>le choix du seuil de confiance, sur la validation</td></tr>
+            <tr><td><code>etapes/5, parties 5 et 6</code></td><td>le résultat du test (relu, jamais recalculé) et le corpus de test annoté : les XML, avec les balises &lt;score&gt; et &lt;a_verifier&gt;</td></tr>
+            <tr><td><code>« Pour relancer sur Google Colab »</code></td><td>en tête des notebooks 2, 3 et 4 : comment les modèles ont été entraînés sur Colab (ENTRAINER = True)</td></tr>
           </tbody>
         </table>
       </div>

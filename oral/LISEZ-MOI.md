@@ -6,10 +6,10 @@ Tout ce qu'il faut pour préparer et passer l'oral, au même endroit.
 
 | Fichier | À quoi il sert |
 |---|---|
-| `guide_projet.html` | **Le document pour tout apprendre.** Double-clic : il s'ouvre dans le navigateur. Il contient six parties : A, le projet en bref ; B, ce qu'on a fait étape par étape, avec les figures ; C, les 12 notions théoriques ; D, la préparation de l'oral ; E, le code fichier par fichier ; F, le glossaire. |
+| `guide_projet.html` | **Le document pour tout apprendre.** Double-clic : il s'ouvre dans le navigateur. Il contient six parties : A, le projet en bref ; B, ce qu'on a fait étape par étape, avec les figures ; C, les 12 notions théoriques ; D, la préparation de l'oral ; E, le code, notebook par notebook ; F, le glossaire. |
 | `fiches_oral.md` | Les 12 notions en version courte, pour réviser vite. |
 | `lancer_demo.bat` | Double-clic : lance l'interface de démonstration. Elle s'ouvre dans le navigateur. |
-| `ouvrir_le_code.bat` | Double-clic : ouvre le projet dans VS Code, avec les fichiers des 10 passages à savoir montrer (partie E du guide). |
+| `ouvrir_le_code.bat` | Double-clic : ouvre le projet dans VS Code, avec les 5 notebooks et `app.py`, où sont les 10 passages à savoir montrer (partie E du guide). |
 | `guide_images/` | Les figures du guide. Laisser ce dossier à côté du guide. |
 
 **Ne sors pas ce dossier du projet** : les deux `.bat` lancent les commandes depuis `projet_ia`, le dossier parent. Pour emporter le projet, copie tout `projet_ia`, avec `data/raw/`.
@@ -17,14 +17,14 @@ Tout ce qu'il faut pour préparer et passer l'oral, au même endroit.
 ## Ailleurs dans le projet
 
 - `docs/rapport.pdf` : **le rapport à envoyer au prof**, au moins 24 h avant l'oral ;
-- `docs/architecture.md` et `docs/journal_decisions.md` : l'architecture, et la justification de chaque choix (D1 à D21) ;
-- le code : `src/avions/` (les fonctions) et `scripts/` (les commandes).
+- `docs/journal_decisions.md` : la justification de chaque choix (D1 à D22) ;
+- le code : `etapes/`, un notebook par étape avec tout son code et ses résultats, et `app.py`, l'interface de la démo.
 
 ## Dans quel ordre réviser
 
 1. **Le projet** : parties A et B du guide. Tu dois pouvoir raconter les 6 étapes dans l'ordre.
 2. **Les 12 notions** : partie C du guide, puis les fiches pour les revoir vite. Elles sont tirées au sort pendant les questions individuelles.
-3. **Le code** : partie E du guide, avec les fichiers ouverts dans VS Code (`ouvrir_le_code.bat`). Pour chaque fichier, sache dire ce qu'il fait en une phrase.
+3. **Le code** : partie E du guide, avec les notebooks ouverts dans VS Code (`ouvrir_le_code.bat`). Pour chaque notebook, sache dire ce qu'il fait en une phrase, et retrouver les 10 passages.
 4. **L'oral** : partie D du guide, et répéter la démo jusqu'à la faire sans réfléchir.
 
 ## La démo, en 2 minutes
