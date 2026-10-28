@@ -1,8 +1,8 @@
 """Démonstration : tester le modèle sur les images de TEST, jamais vues pendant l'entraînement.
 
-Lancer depuis la racine du projet :  uv run python app.py   (ou double-clic sur oral/lancer_demo.bat)
+Lancer depuis la racine du projet :  uv run python app.py
 
-1. On choisit une des 131 images de test (aucune image extérieure, décision D17).
+1. On choisit une des 131 images de test (aucune image extérieure au dataset).
 2. « Détecter les avions » : le modèle répond par des boîtes bleues, là où sa confiance finale
    (détecteur × classifieur) atteint le seuil, 0,5 par défaut comme pour nos scores officiels.
 3. « Corriger avec la vérité » : c'est oui ou non. Chaque réponse est juste (vert) ou fausse

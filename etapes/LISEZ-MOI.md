@@ -23,4 +23,4 @@ Le prof a demandé en séance de faire **la détection avant la classification**
 
 ## Et le reste du dépôt ?
 
-`app.py`, à la racine, contient l'interface complète de la démo, lancée par `oral/lancer_demo.bat`. Il reprend la même chaîne en deux étages que le notebook 5.
+`app.py`, à la racine, contient l'interface complète de la démo : `uv run python app.py`. Il reprend la même chaîne en deux étages que le notebook 5.

@@ -2,20 +2,13 @@
 
 Projet du module « Introduction à l'IA » (IPSA Toulouse). L'application **localise les avions** dans une image satellite et **détermine leur type**, parmi 20 codés A1 à A20.
 
-## Le rendu
+## Le contenu du dépôt
 
-| Demandé par le sujet | Où le trouver |
+| Quoi | Où |
 |---|---|
-| Le rapport : architecture, lien Git, lien du corpus | [docs/rapport.md](docs/rapport.md) (et [docs/rapport.pdf](docs/rapport.pdf), joint à l'e-mail) |
-| Le code du projet | [etapes/](etapes/) : un notebook par étape du sujet, avec tout son code et ses résultats ; [app.py](app.py) : l'interface de la démo |
+| Le code, un notebook par étape, avec ses résultats | [etapes/](etapes/) |
+| L'interface de démonstration | [app.py](app.py) (voir [Lancer la démo](#lancer-la-démo)) |
 | Le corpus de test annoté par le modèle | [reports/corpus_test_annote/](reports/corpus_test_annote/) : 131 XML, aperçus, tableau, notice |
-| Une démonstration qui fonctionne | `uv run python app.py` (voir [Lancer la démo](#lancer-la-démo)) |
-
-Pour comprendre et présenter le projet, tout est dans le dossier [oral/](oral/) (voir [oral/LISEZ-MOI.md](oral/LISEZ-MOI.md)) :
-- [oral/guide_projet.html](oral/guide_projet.html) : le projet étape par étape, avec les figures, les 12 notions de l'oral et les passages de code à savoir montrer. GitHub n'affiche que son code : l'ouvrir dans un navigateur après avoir cloné ou téléchargé le dépôt (Code > Download ZIP) ;
-- [docs/journal_decisions.md](docs/journal_decisions.md) : chaque choix et sa justification (D1 à D22) ;
-- [oral/fiches_oral.md](oral/fiches_oral.md) : les fiches de révision des 12 notions ;
-- `oral/lancer_demo.bat` et `oral/ouvrir_le_code.bat` : un double-clic pour lancer la démo, ou pour ouvrir le code à montrer dans VS Code.
 
 ## L'architecture, en deux étages
 
@@ -49,7 +42,7 @@ Un détecteur YOLO à 20 classes, qui fait tout en une seule passe, sert de **t�
 
 La mAP50 est mesurée sur tous les seuils de confiance ; les autres colonnes le sont au seuil de 0,5 de l'application.
 
-Sur nos 3 fausses alarmes, 2 sont des doublons (deux boîtes sur un même avion), et la 3e est un vrai avion que le dataset n'a pas annoté. Le détail et l'analyse des erreurs sont dans le [rapport](docs/rapport.md).
+Sur nos 3 fausses alarmes, 2 sont des doublons (deux boîtes sur un même avion), et la 3e est un vrai avion que le dataset n'a pas annoté. Le choix du seuil et le résultat final sont dans le notebook [5_integration.ipynb](etapes/5_integration.ipynb).
 
 ## Lancer la démo
 
@@ -73,7 +66,7 @@ Les deux modèles finaux sont déjà dans le dépôt (`models/`).
 uv run python app.py
 ```
 
-Ou double-cliquer sur `oral/lancer_demo.bat`. La page s'ouvre dans le navigateur. Elle propose les **131 images de test**, que le modèle n'a jamais vues, et s'ouvre sur l'exemple ★ 3803.
+La page s'ouvre dans le navigateur. Elle propose les **131 images de test**, que le modèle n'a jamais vues, et s'ouvre sur l'exemple ★ 3803.
 - **🔍 Détecter les avions** : le modèle répond par des boîtes bleues, là où sa confiance finale atteint le seuil (0,5 par défaut).
 - **✅ Corriger avec la vérité** : chaque réponse est 🟩 **juste** ou 🟥 **fausse**, avec la raison (« vrai : A1 », « doublon » ou « aucun avion annoté »), et chaque vrai avion sans réponse est **oublié** (rouge pointillé).
 - En haut, le **F1 cumulé** additionne les avions des images corrigées. Après les 131 images, il vaut exactement 0,954.
@@ -89,8 +82,6 @@ Ou double-cliquer sur `oral/lancer_demo.bat`. La page s'ouvre dans le navigateur
 | `data/splits/` | le découpage entraînement / validation / test (le dataset lui-même n'est pas dans Git) |
 | `runs/` | les courbes d'entraînement des deux modèles finaux, et les scores des évaluations (y compris ceux des modèles écartés) |
 | `reports/corpus_test_annote/` | le corpus de test annoté par le modèle |
-| `docs/` | le rapport et le journal des décisions |
-| `oral/` | la préparation de l'oral : le guide (et `guide_images/`, les figures de l'EDA), les fiches, les raccourcis de la démo et du code |
 
 ## Les étapes du projet
 
@@ -109,7 +100,7 @@ Elles suivent la démarche du prof. Il nous a demandé en séance de faire la d�
 
 Ouvrir les notebooks d'`etapes/` dans l'ordre (VS Code ou Jupyter, avec l'environnement du projet) et les exécuter. Tout tourne sur le processeur : les notebooks rechargent les modèles entraînés de `models/` et les mesurent à nouveau sur la validation. Le test, mesuré une seule fois à la fin, n'est jamais recalculé : son résultat est relu dans `runs/comparaison_test/`.
 
-La carte graphique du PC plantait pendant les longs entraînements (décision D10). Ils ont donc été faits sur **Google Colab**. Pour les relancer, la partie « Pour relancer sur Google Colab », en tête des notebooks 2, 3 et 4, explique la marche à suivre ; il suffit ensuite de mettre `ENTRAINER = True` dans les notebooks 3 et 4.
+La carte graphique du PC plantait pendant les longs entraînements. Ils ont donc été faits sur **Google Colab**. Pour les relancer, la partie « Pour relancer sur Google Colab », en tête des notebooks 2, 3 et 4, explique la marche à suivre ; il suffit ensuite de mettre `ENTRAINER = True` dans les notebooks 3 et 4.
 
 ## Licence
 

@@ -21,8 +21,10 @@ models/*
 # métriques, matrices de confusion), sauf les points de sauvegarde intermédiaires
 runs/**/weights/
 
-# Sujet du prof : document de cours, pas à publier dans un dépôt public
-docs/main.pdf
+# Le rapport, le sujet, le journal et la préparation de l'oral restent sur le PC : le dépôt ne
+# contient que le code, les modèles, les résultats et le corpus annoté
+docs/
+oral/
 
 # Fichiers système
 .DS_Store
