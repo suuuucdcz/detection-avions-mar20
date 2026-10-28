@@ -16,9 +16,10 @@ un détecteur YOLO11n (« où sont les avions ? »), puis un classifieur ResNet-
 | Dossier ou fichier | Contenu |
 |---|---|
 | `annotations/` | un fichier XML par image, au format Pascal VOC (même format que le dataset) |
-| `images/` | les images d'origine (pas dans Git : ce sont celles du dataset fourni) |
 | `apercus/` | les images avec les boîtes : épaisses pour les avions sûrs, fines avec « ? » pour les avions à vérifier |
 | `detections.csv` | toutes les détections : image, type, confiances, boîte, statut |
+
+Les images d'origine ne sont pas incluses : ce sont les 131 images de test du dataset fourni (leur liste est dans `data/splits/splits.csv`).
 
 Dans les fichiers XML, chaque `<object>` contient :
 - `<name>` : le type d'avion ;

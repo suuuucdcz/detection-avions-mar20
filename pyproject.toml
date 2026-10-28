@@ -17,7 +17,7 @@ dependencies = [
     "ultralytics",
     # Lecture et manipulation d'images
     "opencv-python<5",
-    # Machine learning classique (forêts aléatoires, MLP) et métriques (F1, matrice de confusion)
+    # Découpage stratifié des jeux et métriques (F1, matrice de confusion)
     "scikit-learn",
     # Tableaux de données et graphiques pour l'EDA
     "numpy",

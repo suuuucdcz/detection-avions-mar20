@@ -13,8 +13,6 @@ data/*
 # après un simple clone (les poids de départ téléchargés, comme yolo11n.pt, n'y sont pas).
 models/*
 *.pt
-*.joblib
-*.onnx
 !models/detecteur_1classe.pt
 !models/classifieur_resnet18.pt
 # Résultats des entraînements (runs/) : versionnés comme preuve des scores (courbes,
