@@ -32,7 +32,3 @@ Thumbs.db
 
 # Poids téléchargés par Ultralytics (modèles pré-entraînés, vérification AMP)
 /weights/
-
-# Corpus de test annoté : les XML, les aperçus (boîtes dessinées), le tableau et le LISEZMOI sont
-# dans Git ; les images d'origine (44 Mo), qui viennent du dataset du prof, restent dans data/raw/
-reports/corpus_test_annote/images/
