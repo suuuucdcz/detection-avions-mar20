@@ -6,8 +6,8 @@ un détecteur YOLO11n (« où sont les avions ? »), puis un classifieur ResNet-
 
 ## Réglages
 
-- **Avion sûr** : confiance finale (détecteur × classifieur) ≥ 0.5.
-- **Avion à vérifier** : le détecteur est sûr de voir un avion (≥ 0.6),
+- **Avion sûr** : confiance finale (détecteur × classifieur) ≥ 0,5.
+- **Avion à vérifier** : le détecteur est sûr de voir un avion (≥ 0,6),
   mais la confiance finale est plus basse, le plus souvent parce que le type est incertain.
   Il revient alors à un humain de trancher.
 
@@ -43,5 +43,5 @@ régler le modèle : tous les réglages ont été figés sur la validation avant
 | Avions sûrs du mauvais type | 9 |
 | Fausses alarmes (faux positifs) | 3 |
 | Avions non détectés comme sûrs | 50 |
-| Précision / rappel / F1 au seuil 0.5 | 0.984 / 0.925 / 0.954 |
-| mAP50 (tous les seuils) | 0.957 |
+| Précision / rappel / F1 au seuil 0,5 | 0,984 / 0,925 / 0,954 |
+| mAP50 (tous les seuils) | 0,957 |

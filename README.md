@@ -4,11 +4,14 @@ Projet du module « Introduction à l'IA » (IPSA Toulouse). L'application **loc
 
 ## Le contenu du dépôt
 
-| Quoi | Où |
+| Dossier ou fichier | Contenu |
 |---|---|
-| Le code, un notebook par étape, avec ses résultats | [etapes/](etapes/) |
-| L'interface de démonstration | [app.py](app.py) (voir [Lancer la démo](#lancer-la-démo)) |
-| Le corpus de test annoté par le modèle | [reports/corpus_test_annote/](reports/corpus_test_annote/) : 131 XML, aperçus, tableau, notice |
+| [etapes/](etapes/) | le projet en 5 notebooks, un par étape du sujet : tout le code utilisé, dans l'ordre, déjà exécuté avec ses résultats |
+| [app.py](app.py) | l'interface de la démo, en un seul fichier (la même chaîne en deux étages que le notebook 5) |
+| [models/](models/) | les deux modèles finaux : le détecteur et le classifieur |
+| [data/splits/splits.csv](data/splits/splits.csv) | pour chacune des 1 331 images du dataset : son jeu (train, val ou test) et son groupe de quasi-doublons. Le dataset lui-même n'est pas dans Git |
+| [runs/](runs/) | les courbes d'entraînement des deux modèles finaux, et les scores des évaluations (y compris ceux des modèles écartés) |
+| [reports/corpus_test_annote/](reports/corpus_test_annote/) | le corpus de test annoté par le modèle : 131 XML, aperçus, tableau, notice |
 
 ## L'architecture, en deux étages
 
@@ -31,7 +34,7 @@ image satellite
                         confiance finale = détecteur × classifieur, réponse si ≥ 0,5
 ```
 
-Un détecteur YOLO à 20 classes, qui fait tout en une seule passe, sert de **témoin** pour vérifier que l'approche en deux étages est meilleure.
+Un détecteur YOLO à 20 classes, qui fait tout en une seule passe, a servi de **témoin** pour vérifier que l'approche en deux étages est meilleure.
 
 ## Les résultats (jeu de test : 131 images jamais vues, 788 avions)
 
@@ -72,17 +75,6 @@ La page s'ouvre dans le navigateur. Elle propose les **131 images de test**, que
 - En haut, le **F1 cumulé** additionne les avions des images corrigées. Après les 131 images, il vaut exactement 0,954.
 - Le curseur change le seuil ; il faut ensuite recliquer sur un bouton. Une image corrigée à un autre seuil que 0,5 ne compte pas dans le F1 cumulé.
 
-## L'organisation du dépôt
-
-| Dossier ou fichier | Contenu |
-|---|---|
-| `etapes/` | le projet en 5 notebooks, un par étape du sujet : tout le code utilisé, dans l'ordre, déjà exécuté avec ses résultats |
-| `app.py` | l'interface de la démo, en un seul fichier (la même chaîne en deux étages que le notebook 5) |
-| `models/` | les deux modèles finaux : le détecteur et le classifieur |
-| `data/splits/` | le découpage entraînement / validation / test (le dataset lui-même n'est pas dans Git) |
-| `runs/` | les courbes d'entraînement des deux modèles finaux, et les scores des évaluations (y compris ceux des modèles écartés) |
-| `reports/corpus_test_annote/` | le corpus de test annoté par le modèle |
-
 ## Les étapes du projet
 
 Elles suivent la démarche du prof. Il nous a demandé en séance de faire la détection avant la classification.
@@ -98,7 +90,7 @@ Elles suivent la démarche du prof. Il nous a demandé en séance de faire la d�
 
 ## Reproduire les résultats
 
-Ouvrir les notebooks d'`etapes/` dans l'ordre (VS Code ou Jupyter, avec l'environnement du projet) et les exécuter. Tout tourne sur le processeur : les notebooks rechargent les modèles entraînés de `models/` et les mesurent à nouveau sur la validation. Le test, mesuré une seule fois à la fin, n'est jamais recalculé : son résultat est relu dans `runs/comparaison_test/`.
+Ouvrir les notebooks d'`etapes/` dans l'ordre (VS Code ou Jupyter, avec l'environnement du projet) et les exécuter : l'étape 2 prépare les fichiers dont les étapes 3 et 4 ont besoin (`data/yolo/` et `data/crops/`, hors Git). Tout tourne sur le processeur : les notebooks rechargent les modèles entraînés de `models/` et les mesurent à nouveau sur la validation. Le test, mesuré une seule fois à la fin, n'est jamais recalculé : son résultat est relu dans `runs/comparaison_test/`.
 
 La carte graphique du PC plantait pendant les longs entraînements. Ils ont donc été faits sur **Google Colab**. Pour les relancer, la partie « Pour relancer sur Google Colab », en tête des notebooks 2, 3 et 4, explique la marche à suivre ; il suffit ensuite de mettre `ENTRAINER = True` dans les notebooks 3 et 4.
 
