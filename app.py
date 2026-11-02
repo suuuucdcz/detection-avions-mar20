@@ -8,7 +8,7 @@ Lancer depuis la racine du projet :  uv run python app.py
    À gauche de chaque boîte : cette confiance.
 3. « Corriger avec la vérité » : c'est oui ou non. Chaque réponse est juste (vert) ou fausse
    (rouge, avec la raison), et chaque vrai avion sans réponse est oublié (rouge pointillé).
-   En haut, le F1 cumulé des images corrigées : après les 131, il vaut exactement 0,954.
+   En haut, le F1 score de l'ensemble des images corrigées : après les 131, il vaut exactement 0,954.
 4. « Tester les 131 images » : la même chose pour toutes les images d'un coup, avec le bilan total.
 
 Ce fichier est autonome : il contient toute la chaîne en deux étages, la même que dans le
@@ -522,20 +522,20 @@ def tout_md(corrections: list[Correction], seuil: float, duree: float) -> str:
     return "  \n".join(lignes)
 
 
-def f1_md(cumul: dict, au_seuil_officiel=True) -> str:
-    """Le F1 cumulé : un seul F1 sur l'ensemble des images corrigées, en additionnant leurs avions.
+def f1_md(corrigees: dict, au_seuil_officiel=True) -> str:
+    """Le F1 score de l'ensemble des images corrigées : un seul F1, en additionnant leurs avions.
 
     Pas de F1 par image : un F1 se calcule sur un ensemble, et une image n'a que quelques avions.
-    cumul : {numéro d'image : (justes, réponses, vrais avions)}.
+    corrigees : {numéro d'image : (justes, réponses, vrais avions)}.
     """
-    if cumul:
-        justes = sum(j for j, _, _ in cumul.values())
-        reponses = sum(r for _, r, _ in cumul.values())
-        n_avions = sum(n for _, _, n in cumul.values())
+    if corrigees:
+        justes = sum(j for j, _, _ in corrigees.values())
+        reponses = sum(r for _, r, _ in corrigees.values())
+        n_avions = sum(n for _, _, n in corrigees.values())
         f1 = virgule(f1_score(justes, reponses, n_avions), 3)
-        texte = f"**F1 cumulé : {f1}** sur {len(cumul)} image(s) corrigée(s)"
+        texte = f"**F1 score : {f1}** sur {len(corrigees)} image(s) corrigée(s)"
     else:
-        texte = "**F1 cumulé : —** (corrige des images pour le calculer)"
+        texte = "**F1 score : —** (corrige des images pour le calculer)"
     if not au_seuil_officiel:
         texte += " · seuil modifié : cette image n'y est pas comptée"
     return texte
@@ -557,32 +557,32 @@ def creer_demo() -> gr.Blocks:
         return detections, time.perf_counter() - debut
 
     # Chaque fonction renvoie, dans l'ordre de `sorties` : l'image, le résumé du modèle, le bilan,
-    # la ligne du F1, puis l'image choisie et les comptes du F1 cumulé (gardés entre deux clics).
-    def afficher(image_id, cumul):
+    # la ligne du F1, puis l'image choisie et les comptes des images corrigées (gardés entre deux clics).
+    def afficher(image_id, corrigees):
         """Nouvelle image : affichée sans boîte, résultats précédents effacés."""
         image = gr.Image(lire_image(image_id), label=f"Image {image_id}")
-        return image, "", "", f1_md(cumul), image_id, cumul
+        return image, "", "", f1_md(corrigees), image_id, corrigees
 
-    def detecter(image_id, seuil, cumul):
+    def detecter(image_id, seuil, corrigees):
         detections, duree = predire(image_id, seuil)
         image = dessiner_reponses(lire_image(image_id), detections)
-        return image, resume_md(detections, duree, seuil), "", f1_md(cumul), image_id, cumul
+        return image, resume_md(detections, duree, seuil), "", f1_md(corrigees), image_id, corrigees
 
-    def corriger_clic(image_id, seuil, cumul):
+    def corriger_clic(image_id, seuil, corrigees):
         # la détection est refaite à chaque fois (0,2 s) : la correction suit toujours le curseur
         detections, duree = predire(image_id, seuil)
         correction = corriger(verite[verite["image_id"] == image_id], detections)
-        # le F1 cumulé n'utilise que le seuil officiel (round : le curseur peut renvoyer 0.5000001)
+        # le F1 score n'utilise que le seuil officiel (round : le curseur peut renvoyer 0.5000001)
         au_seuil_officiel = round(seuil, 2) == DEFAULT_MIN_SCORE
         if au_seuil_officiel:
-            cumul[image_id] = correction.comptes()  # une image ne compte qu'une fois
+            corrigees[image_id] = correction.comptes()  # une image ne compte qu'une fois
         image = dessiner_correction(lire_image(image_id), correction)
         resume = resume_md(detections, duree, seuil)
-        ligne = f1_md(cumul, au_seuil_officiel)
-        return image, resume, bilan_md(correction), ligne, image_id, cumul
+        ligne = f1_md(corrigees, au_seuil_officiel)
+        return image, resume, bilan_md(correction), ligne, image_id, corrigees
 
     # gr.Progress() : Gradio remplace ce paramètre par une barre de progression dans la page
-    def tester_tout(seuil, cumul, progress=gr.Progress()):  # noqa: B008
+    def tester_tout(seuil, corrigees, progress=gr.Progress()):  # noqa: B008
         """Les 131 images d'un coup : détection et correction de chacune, puis le bilan total."""
         debut = time.perf_counter()
         au_seuil_officiel = round(seuil, 2) == DEFAULT_MIN_SCORE
@@ -592,21 +592,21 @@ def creer_demo() -> gr.Blocks:
             correction = corriger(verite[verite["image_id"] == image_id], detections)
             corrections.append(correction)
             if au_seuil_officiel:  # comme pour « Corriger » : seul le seuil officiel compte
-                cumul[image_id] = correction.comptes()
+                corrigees[image_id] = correction.comptes()
         bilan_total = tout_md(corrections, seuil, time.perf_counter() - debut)
         if not au_seuil_officiel:
-            bilan_total += "  \n(seuil modifié : le F1 cumulé, en haut, ne change pas)"
-        return bilan_total, f1_md(cumul), cumul
+            bilan_total += "  \n(seuil modifié : le F1 score, en haut, ne change pas)"
+        return bilan_total, f1_md(corrigees), corrigees
 
-    def sur_vignette(cumul, evt: gr.SelectData):  # evt.index : la vignette cliquée
-        return afficher(ordre[evt.index], cumul)
+    def sur_vignette(corrigees, evt: gr.SelectData):  # evt.index : la vignette cliquée
+        return afficher(ordre[evt.index], corrigees)
 
-    def au_hasard(cumul):
+    def au_hasard(corrigees):
         index = random.randrange(len(ordre))  # une des 131 vignettes
-        return gr.Gallery(selected_index=index), *afficher(ordre[index], cumul)
+        return gr.Gallery(selected_index=index), *afficher(ordre[index], corrigees)
 
     with gr.Blocks(title="Détection d'avions · MAR20") as demo:
-        etat_image, etat_cumul = gr.State(EXEMPLE), gr.State({})
+        etat_image, etat_corrigees = gr.State(EXEMPLE), gr.State({})
         gr.Markdown("# ✈️ Détection d'avions sur images satellites")
         ligne_f1 = gr.Markdown(f1_md({}))
         with gr.Row():
@@ -651,12 +651,14 @@ def creer_demo() -> gr.Blocks:
                 bouton_tout = gr.Button(f"🧪 Tester les {len(ordre)} images")
                 bilan_tout = gr.Markdown()
 
-        sorties = [image, resume, bilan, ligne_f1, etat_image, etat_cumul]
-        bouton_tout.click(tester_tout, [seuil, etat_cumul], [bilan_tout, ligne_f1, etat_cumul])
-        galerie.select(sur_vignette, [etat_cumul], sorties)
-        bouton_hasard.click(au_hasard, [etat_cumul], [galerie, *sorties])
-        bouton_detecter.click(detecter, [etat_image, seuil, etat_cumul], sorties)
-        bouton_corriger.click(corriger_clic, [etat_image, seuil, etat_cumul], sorties)
+        sorties = [image, resume, bilan, ligne_f1, etat_image, etat_corrigees]
+        bouton_tout.click(
+            tester_tout, [seuil, etat_corrigees], [bilan_tout, ligne_f1, etat_corrigees]
+        )
+        galerie.select(sur_vignette, [etat_corrigees], sorties)
+        bouton_hasard.click(au_hasard, [etat_corrigees], [galerie, *sorties])
+        bouton_detecter.click(detecter, [etat_image, seuil, etat_corrigees], sorties)
+        bouton_corriger.click(corriger_clic, [etat_image, seuil, etat_corrigees], sorties)
     return demo
 
 
