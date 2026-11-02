@@ -522,9 +522,10 @@ def tout_md(corrections: list[Correction], seuil: float, duree: float) -> str:
     return "  \n".join(lignes)
 
 
-def f1_md(cumul: dict, correction: Correction | None = None, au_seuil_officiel=True) -> str:
-    """Le F1 cumulé des images corrigées (en additionnant leurs avions), puis celui de l'image.
+def f1_md(cumul: dict, au_seuil_officiel=True) -> str:
+    """Le F1 cumulé : un seul F1 sur l'ensemble des images corrigées, en additionnant leurs avions.
 
+    Pas de F1 par image : un F1 se calcule sur un ensemble, et une image n'a que quelques avions.
     cumul : {numéro d'image : (justes, réponses, vrais avions)}.
     """
     if cumul:
@@ -535,9 +536,8 @@ def f1_md(cumul: dict, correction: Correction | None = None, au_seuil_officiel=T
         texte = f"**F1 cumulé : {f1}** sur {len(cumul)} image(s) corrigée(s)"
     else:
         texte = "**F1 cumulé : —** (corrige des images pour le calculer)"
-    if correction is not None:
-        texte += f" · cette image : {virgule(f1_score(*correction.comptes()))}"
-        texte += "" if au_seuil_officiel else " (seuil modifié : non comptée)"
+    if not au_seuil_officiel:
+        texte += " · seuil modifié : cette image n'y est pas comptée"
     return texte
 
 
@@ -578,7 +578,7 @@ def creer_demo() -> gr.Blocks:
             cumul[image_id] = correction.comptes()  # une image ne compte qu'une fois
         image = dessiner_correction(lire_image(image_id), correction)
         resume = resume_md(detections, duree, seuil)
-        ligne = f1_md(cumul, correction, au_seuil_officiel)
+        ligne = f1_md(cumul, au_seuil_officiel)
         return image, resume, bilan_md(correction), ligne, image_id, cumul
 
     # gr.Progress() : Gradio remplace ce paramètre par une barre de progression dans la page
